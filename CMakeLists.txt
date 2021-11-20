@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.12)
 project(ruse VERSION 0.1.0 LANGUAGES C CXX)
 
 option(ruse_BUILD_TESTING "Build the ruse tests" ON)
+set(ruse_CXX_STANDARD 20 CACHE STRING "c++ standard used by ruse")
 
 include(GNUInstallDirs)
 set(ruse_INSTALL_BINDIR ${CMAKE_INSTALL_BINDIR})
@@ -30,11 +31,3 @@ install(EXPORT ruse_EXPORTS
 configure_file(ruse-config.cmake.in ruse-config.cmake)
 install(FILES ${PROJECT_BINARY_DIR}/ruse-config.cmake
   DESTINATION ${ruse_INSTALL_CONFDIR})
-
-
-
-
-
-
-
-
