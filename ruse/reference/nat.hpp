@@ -14,7 +14,7 @@ namespace ruse::reference
   requires(Nonnegative<N>)
   struct Nat
   {
-    static_assert( N > 0);
+    static_assert( N >= 0);
     static constexpr integer value = N;
   };
 

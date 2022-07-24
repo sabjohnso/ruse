@@ -115,4 +115,90 @@ namespace ruse::testing {
 
   TEST(tail, list) { STATIC_EXPECT_EQ(list(2, 3), tail(list(1, 2, 3))); }
 
+  TEST(list_ref, list){
+    STATIC_EXPECT_EQ(1, list_ref(nat<0>, list(1, 2, 3)));
+    STATIC_EXPECT_EQ(2, list_ref(nat<1>, list(1, 2, 3)));
+    STATIC_EXPECT_EQ(3, list_ref(nat<2>, list(1, 2, 3)));
+  }
+
+  TEST(last, list){
+    STATIC_EXPECT_EQ(3, last(list(1, 2, 3)));
+  }
+
+  TEST(butlast, list){
+    STATIC_EXPECT_EQ(list(1, 2), butlast(list(1, 2, 3)));
+  }
+
+  TEST(fmap, list){
+    STATIC_EXPECT_EQ(list(1, 4, 9), fmap([](auto x){ return x*x; }, list(1, 2, 3)));
+  }
+
+  TEST(flatmap, list){
+    STATIC_EXPECT_EQ(list(1, 2, 3), flatmap(list, list(1, 2, 3)));
+  }
+
+  TEST(flatten, list){
+    STATIC_EXPECT_EQ(list(1, 2, 3), flatten(list(list(1), list(2), list(3))));
+  }
+
+  TEST(fapply, list){
+    STATIC_EXPECT_EQ(list(1, 4, 9),
+                     fapply(list([](auto x){ return x*x; }),
+                            list(1, 2, 3)));
+  }
+
+  TEST(extract, list){
+    STATIC_EXPECT_EQ(1, extract(list(1, 2, 3)));
+  }
+
+  TEST(extend, list){
+    STATIC_EXPECT_EQ(list(1, 2, 3), extend(extract, list(1, 2, 3)));
+  }
+
+  TEST(duplicate, list){
+    STATIC_EXPECT_EQ(list(list(1, 2, 3), list(2, 3), list(3)),
+                     duplicate(list(1, 2, 3)));
+
+  }
+
+  TEST(zapply, list){
+    constexpr auto add = curry(nat<2>, [](auto x, auto y){ return x + y; });
+    static_assert(ListLike<decltype(list(1, 2)), decltype(fmap(add, list(1, 2)))>);
+    STATIC_EXPECT_EQ(
+      list(4, 6),
+      zapply(fmap(add, list(1, 2)), list(3, 4)));
+  }
+
+
+  TEST(homogeneous_list, hlist_ref){
+    STATIC_EXPECT_EQ(1, hlist_ref(0, list(1, 2, 3)));
+    STATIC_EXPECT_EQ(2, hlist_ref(1, list(1, 2, 3)));
+    STATIC_EXPECT_EQ(3, hlist_ref(2, list(1, 2, 3)));
+  }
+
+  TEST(property_list, construction){
+    STATIC_EXPECT_TRUE(is_property_list(list("a"_tag(1), "b"_tag(2))));
+  }
+
+  TEST(property_list, property_list_ref){
+    STATIC_EXPECT_EQ("a"_tag(1), property_list_ref("a"_tag, list("a"_tag(1), "b"_tag(2))));
+  }
+
+  TEST(list, take){
+    STATIC_EXPECT_EQ(list(1, 2), take(nat<2>, list(1, 2, 3, 4)));
+  }
+
+  TEST(list, take_fewer){
+    STATIC_EXPECT_EQ(list(1), take(nat<2>, list(1)));
+  }
+
+  TEST(list, drop){
+    STATIC_EXPECT_EQ(list(3, 4), drop(nat<2>, list(1, 2, 3, 4)));
+  }
+
+  TEST(list, drop_more){
+    STATIC_EXPECT_EQ(nothing, drop(nat<10>, list(1, 2, 3, 4)));
+  }
+
+
 } // end of namespace ruse::testing

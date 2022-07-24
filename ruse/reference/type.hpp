@@ -16,6 +16,12 @@ namespace ruse::reference {
   {
     using type = T;
 
+    template<typename ... Us>
+    constexpr auto
+    operator ()(Us ... xs) const {
+      return T{xs ...};
+    }
+
     friend constexpr bool
     operator ==(type_s, type_s){ return true; }
 
@@ -71,4 +77,25 @@ namespace ruse::reference {
   template<typename T, typename U>
   concept TypeProxy = is_same_v<remove_cvref_t<T>, type_s<remove_cvref_t<U>>>;
 
+  constexpr auto type_of = []<typename T>(T){
+    return type<T>;
+  };
+
+  template<Type T>
+  constexpr auto get_pure(type_s<T>){
+    return type_of;
+  }
+
+
+  template<Type T>
+  constexpr auto get_flatmap(type_s<T>){
+    return []<typename F, typename U>(F, type_s<U>){
+      return result_of_t<F(U)>{};
+    };
+  }
+
+  template<typename T>
+  constexpr auto is = []<typename U>(U){
+    return type<T> == type<U>;
+  };
 } // end of namespace ruse::reference
