@@ -8,9 +8,9 @@
 #include <ruse/reference/nothing.hpp>
 #include <ruse/reference/pair.hpp>
 #include <ruse/reference/protocol.hpp>
+#include <ruse/reference/tag.hpp>
 #include <ruse/reference/type.hpp>
 #include <ruse/reference/utility.hpp>
-#include <ruse/reference/tag.hpp>
 
 namespace ruse::reference {
 
@@ -62,6 +62,26 @@ namespace ruse::reference {
   };
 
   /**
+   * @brief A concept for empty lists
+   */
+  template<typename T>
+  concept EmptyList = List<T> and not NonemptyList<T>;
+
+  /**
+   * @brief Return `true` if the input list is an empty list. Otherwise, return
+   * `false`.
+   */
+  constexpr auto is_empty_list = []<typename T>(T) { return EmptyList<T>; };
+
+  /**
+   * @brief Return `true` if the input type proxy is a proxy for an empty list
+   * type. Otherwise, return `false`.
+   */
+  constexpr auto is_empty_list_type = []<typename T>(type_s<T>) {
+    return EmptyList<T>;
+  };
+
+  /**
    * @brief Return the number of elements in instances of the list type
    * referenced by the input type proxy.
    */
@@ -106,6 +126,35 @@ namespace ruse::reference {
       return type<nothing_s>;
     }
   };
+
+  /**
+   * @brief Return `true` if every member of the input list type proxy is a
+   * vacuous type. Otherwise, return `false`.
+   */
+  constexpr auto is_vacuous_list_type = []<List T>(type_s<T>) {
+    constexpr auto recur = []<List U>(auto recur, type_s<U>) {
+      if constexpr (EmptyList<U>) {
+        return true;
+      } else if (is_vacuous_type(head_type(type<U>))) {
+        return recur(recur, tail_type(type<U>));
+      } else {
+        return false;
+      }
+    };
+    return recur(recur, type<T>);
+  };
+
+  /**
+   * @brief The concept of a vacuous list: a list where every member is an
+   * instance of a vacuous type.
+   */
+  template<typename T>
+  concept VacuousList = List<T> and is_vacuous_list_type(type<T>);
+
+  /**
+   * @brief Return `true` if every member of the input list is a vacuous type.
+   */
+  constexpr auto is_vacuous_list = []<typename T>(T) { return VacuousList<T>; };
 
   /**
    * @brief Return `true` if the input type proxy is for a homogeneous list.
@@ -198,15 +247,14 @@ namespace ruse::reference {
     return HomogeneousAssociationList<T>;
   };
 
-
   /**
    * @brief Return `true` if the input is a type proxy for a property list type.
    * Otherwise, return `false`.
    */
-  constexpr auto is_property_list_type = []<typename T>(T){
-    constexpr auto aux = []<List U>(auto recur, type_s<U>){
-      if constexpr (NonemptyList<U>){
-        if constexpr (is_tagged_type(head_type(type<U>))){
+  constexpr auto is_property_list_type = []<typename T>(T) {
+    constexpr auto aux = []<List U>(auto recur, type_s<U>) {
+      if constexpr (NonemptyList<U>) {
+        if constexpr (is_tagged_type(head_type(type<U>))) {
           return recur(recur, tail_type(type<U>));
         } else {
           return false;
@@ -216,8 +264,8 @@ namespace ruse::reference {
       }
     };
 
-    if constexpr (Type<T>){
-      if constexpr (List<typename T::type>){
+    if constexpr (Type<T>) {
+      if constexpr (List<typename T::type>) {
         return u(aux, T{});
       } else {
         return false;
@@ -234,15 +282,16 @@ namespace ruse::reference {
   concept PropertyList = is_property_list_type(type<T>);
 
   /**
-   * @brief Return `true` if the input is a property list. Otherwise, return `false`.
+   * @brief Return `true` if the input is a property list. Otherwise, return
+   * `false`.
    */
-  constexpr auto is_property_list = []<typename T>(T){
+  constexpr auto is_property_list = []<typename T>(T) {
     return PropertyList<T>;
   };
 
   template<typename T, typename U>
-  concept ListLike = List<T> && List<U> && length_type(type<T>) == length_type(type<U>);
-
+  concept ListLike = List<T> && List<U> && length_type(type<T>)
+  == length_type(type<U>);
 
   /**
    * @brief Return the number of elemements in the input list.
@@ -340,30 +389,36 @@ namespace ruse::reference {
   });
 
   /**
-   * @brief Return a list containing the first `n` elements of the input list, or
-   * return the input list if it has `n` or fewer elements
+   * @brief Return a list containing the first `n` elements of the input list,
+   * or return the input list if it has `n` or fewer elements
    */
-  constexpr auto take = curry(nat<2>,[]<integer N>(Nat<N>, List auto xs) -> List auto {
-      constexpr auto aux = []<integer M, List T>(auto recur, List auto accum, Nat<M>, T xs){
-        if constexpr (M == 0 || Nothing<T>){
+  constexpr auto take = curry(
+    nat<2>,
+    []<integer N>(Nat<N>, List auto xs) -> List auto {
+      constexpr auto aux = []<integer M, List T>(
+                             auto recur, List auto accum, Nat<M>, T xs) {
+        if constexpr (M == 0 || Nothing<T>) {
           return reverse(accum);
         } else {
-          return recur(recur, cons(head(xs), accum), nat<M-1>, tail(xs));
+          return recur(recur, cons(head(xs), accum), nat<M - 1>, tail(xs));
         }
       };
       return u(aux, nothing, nat<N>, xs);
     });
 
   /**
-   * @brief Return a list with the first `n` elements of the input list removed, or
-   * return `nothing` if the input list has `n` or fewer elements.
+   * @brief Return a list with the first `n` elements of the input list removed,
+   * or return `nothing` if the input list has `n` or fewer elements.
    */
-  constexpr auto drop = curry(nat<2>, []<integer N>(Nat<N>, List auto xs) -> List auto {
-      constexpr auto aux = []<integer M, List T>(auto recur, Nat<M>, T xs){
-        if constexpr (M == 0 || Nothing<T>){
+  constexpr auto drop = curry(
+    nat<2>,
+    []<integer N>(Nat<N>, List auto xs) -> List auto {
+      constexpr auto aux = []<integer M, List T>(auto recur, Nat<M>, T xs) {
+        if constexpr (M == 0 || Nothing<T>) {
           return xs;
         } else {
-          return recur(recur, nat<M-1>, tail(xs));;
+          return recur(recur, nat<M - 1>, tail(xs));
+          ;
         }
       };
       return u(aux, nat<N>, xs);
@@ -372,37 +427,87 @@ namespace ruse::reference {
   /**
    * @brief Return the indicated element from the homogeneous input list.
    */
-  constexpr auto homogeneous_list_ref = curry(nat<2>, [](integer index, List auto xs){
-    constexpr auto aux = []<NonemptyList T>(auto recur, integer index, T xs){
-      if constexpr (UnitaryList<T>){
-        return head(xs);
-      } else {
-        return index > 0
-          ? recur(recur, index-1, tail(xs))
-          : head(xs);
-      }
-    };
-
-    return (index >= 0) && (index < length(xs))
-      ? u(aux, index, xs)
-      : throw logic_error("invalid homogeneous list index");
-  });
-
-  constexpr auto property_list_ref = curry(nat<2>, [](Empty auto tag, PropertyList auto xs){
-    constexpr auto aux = []<Tag K, PropertyList T>(auto recur, K key, T xs){
-      if constexpr (NonemptyList<T>){
-        if constexpr (name_type(type<K>) == name_type(head_type(type<T>))){
+  constexpr auto homogeneous_list_ref =
+    curry(nat<2>, [](integer index, HomogeneousList auto xs) {
+      constexpr auto recur = []<NonemptyList T>(
+                               auto recur, integer index, T xs) {
+        if constexpr (UnitaryList<T>) {
           return head(xs);
         } else {
-          return recur(recur, key, tail(xs));
+          return index > 0 ? recur(recur, index - 1, tail(xs)) : head(xs);
         }
+      };
 
-      } else {
-        return false;
-      }
-    };
-    return u(aux, tag, xs);
-  });
+      return (index >= 0) && (index < length(xs))
+               ? recur(recur, index, xs)
+               : throw logic_error("invalid homogeneous list index");
+    });
+
+  /**
+   * @brief Return the input hlist sorted according to cmp.
+   */
+  constexpr auto homogeneous_list_sort =
+    curry(nat<2>, []<HomogeneousList T>(auto cmp, T xs) {
+      constexpr auto recur =
+        []<List Left, List Right>(
+          auto recur, auto cmp, Left left, Right right) -> T {
+        if constexpr (Nothing<Right>) {
+          return reverse(left);
+        } else if constexpr (Nothing<Left>) {
+          return recur(recur, cmp, list(car(right)), cdr(right));
+        } else {
+          return cmp(car(left), car(right))
+                   ? recur(recur, cmp, cons(car(right), left), cdr(right))
+                   : recur(
+                       recur,
+                       cmp,
+                       cdr(left),
+                       cons(car(right), cons(car(left), cdr(right))));
+        }
+      };
+      return recur(recur, cmp, list(car(xs)), cdr(xs));
+    });
+
+  /**
+   * @brief Return true if the property list has the indicated tag.  Otherwise
+   * return false.
+   */
+  constexpr auto property_list_has_tag =
+    curry(nat<2>, [](Tag auto key, PropertyList auto xs) {
+      constexpr auto recur = []<Tag K, PropertyList T>(
+                               auto recur, K key, T xs) {
+        if constexpr (NonemptyList<T>) {
+          if constexpr (name_type(type<K>) == name_type(head_type(type<T>))) {
+            return true;
+          } else {
+            return recur(recur, key, tail(xs));
+          }
+        } else {
+          return false;
+        }
+      };
+      return recur(recur, key, xs);
+    });
+
+  /**
+   * @brief Return the first element of the input property list matching the
+   * input tag.
+   */
+  constexpr auto property_list_ref =
+    curry(nat<2>, [](Empty auto tag, PropertyList auto xs) {
+      constexpr auto aux = []<Tag K, PropertyList T>(auto recur, K key, T xs) {
+        if constexpr (NonemptyList<T>) {
+          if constexpr (name_type(type<K>) == name_type(head_type(type<T>))) {
+            return head(xs);
+          } else {
+            return recur(recur, key, tail(xs));
+          }
+        } else {
+          return false;
+        }
+      };
+      return u(aux, tag, xs);
+    });
 
   /**
    * @brief Return the last element of the nonempty input list.
@@ -418,29 +523,30 @@ namespace ruse::reference {
     return reverse(tail(reverse(xs)));
   };
 
-
   /**
-   * @brief Exectute the input function over the input list purely for side effects.
+   * @brief Exectute the input function over the input list purely for side
+   * effects.
    */
-  constexpr auto dolist = [](List auto xs, auto&& f){
-      auto aux = [&]<List T>(auto&& recur, T xs){
-        if constexpr (NonemptyList<T>){
-          f(head(xs));
-          recur(recur, tail(xs));
-        }
-      };
-      u(aux, xs);
+  constexpr auto dolist = [](List auto xs, auto&& f) {
+    auto aux = [&]<List T>(auto&& recur, T xs) {
+      if constexpr (NonemptyList<T>) {
+        f(head(xs));
+        recur(recur, tail(xs));
+      }
     };
-
+    u(aux, xs);
+  };
 
   template<List T>
-  constexpr auto get_pure(type_s<T>)
+  constexpr auto
+  get_pure(type_s<T>)
   {
     return list;
   }
 
   template<List T>
-  constexpr auto get_flatmap(type_s<T>)
+  constexpr auto
+  get_flatmap(type_s<T>)
   {
     return [](auto f, List auto xs) -> List auto
     {
@@ -452,21 +558,24 @@ namespace ruse::reference {
           return reverse(accum);
         }
       };
-      return u(aux, nothing, f, xs);
+      return aux(aux, nothing, f, xs);
     };
   }
 
   template<NonemptyList T>
-  constexpr auto get_extract(type_s<T>)
+  constexpr auto
+  get_extract(type_s<T>)
   {
     return head;
   }
 
   template<NonemptyList T>
-  constexpr auto get_extend(type_s<T>)
+  constexpr auto
+  get_extend(type_s<T>)
   {
     return [](auto f, NonemptyList auto xs) {
-      constexpr auto aux = []<List U>(auto recur, List auto accum, auto f, U xs) {
+      constexpr auto aux = []<List U>(
+                             auto recur, List auto accum, auto f, U xs) {
         if constexpr (NonemptyList<U>) {
           return recur(recur, cons(f(xs), accum), f, tail(xs));
         } else {
@@ -477,13 +586,16 @@ namespace ruse::reference {
     };
   }
 
-
   template<NonemptyList T>
-  constexpr auto get_zapply(type_s<T>){
-    return  []<NonemptyList F>(F wf, ListLike<F> auto wx){
-      return [=]<auto ... Indices>(index_sequence<Indices ...>){
-        return list(list_ref(nat<Indices>, wf)(list_ref(nat<Indices>, wx)) ...);
-      }(make_index_sequence<length_type(type<F>)>());
+  constexpr auto
+  get_zapply(type_s<T>)
+  {
+    return []<NonemptyList F>(F wf, ListLike<F> auto wx) {
+      return [=]<auto... Indices>(index_sequence<Indices...>)
+      {
+        return list(list_ref(nat<Indices>, wf)(list_ref(nat<Indices>, wx))...);
+      }
+      (make_index_sequence<length_type(type<F>)>());
     };
   }
 

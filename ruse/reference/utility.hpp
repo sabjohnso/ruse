@@ -4,6 +4,7 @@
 // ... ruse header files
 //
 #include <ruse/reference/import.hpp>
+#include <ruse/reference/type.hpp>
 #include <ruse/reference/nat.hpp>
 
 
@@ -33,6 +34,10 @@ namespace ruse::reference
    */
   template<typename T>
   concept Vacuous = Empty<T> && DefaultConstructible<T>;
+
+  constexpr auto is_vacuous_type = []<typename T>(type_s<T>){
+    return Vacuous<T>;
+  };
 
   /**
    * @brief A concept for a selector

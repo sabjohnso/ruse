@@ -4,6 +4,8 @@
 // ... ruse header files
 //
 #include <ruse/reference/list.hpp>
+#include <ruse/reference/string.hpp>
+#include <ruse/reference/tag.hpp>
 #include <ruse/reference/utility.hpp>
 
 namespace ruse::reference {
@@ -20,7 +22,8 @@ namespace ruse::reference {
   struct result_parser
   {
     template<HoistedList Sequence>
-    constexpr auto operator()(Sequence) const
+    constexpr auto
+    operator()(Sequence) const
     {
       return list(list("value"_tag(T{}), "sequence"_tag(Sequence{})));
     }
@@ -31,7 +34,11 @@ namespace ruse::reference {
 
   struct fail_parser_s
   {
-    constexpr List auto operator()(HoistedList auto) const { return nothing; }
+    constexpr List auto
+    operator()(HoistedList auto) const
+    {
+      return nothing;
+    }
   } constexpr fail{};
 
   struct item_parser
@@ -52,7 +59,8 @@ namespace ruse::reference {
   struct empty_parser
   {
     template<HoistedList Sequence>
-    constexpr List auto operator()(Sequence) const
+    constexpr List auto
+    operator()(Sequence) const
     {
       if constexpr (NonemptyHoistedList<Sequence>) {
         return fail(Sequence{});
@@ -73,7 +81,8 @@ namespace ruse::reference {
     static constexpr ParserConstructor parser_constructor{};
 
     template<HoistedList Sequence>
-    constexpr List auto operator()(Sequence) const
+    constexpr List auto
+    operator()(Sequence) const
     {
       using Results = result_of_t<Parser(Sequence)>;
       if constexpr (NonemptyList<Results>) {
@@ -141,7 +150,8 @@ namespace ruse::reference {
   {
 
     template<HoistedList Sequence>
-    constexpr auto operator()(Sequence) const
+    constexpr auto
+    operator()(Sequence) const
     {
       if constexpr (0 == sizeof...(Parsers)) {
         return result(hoisted_nothing, Sequence{});
