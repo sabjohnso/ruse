@@ -162,6 +162,18 @@ namespace ruse::testing {
     STATIC_EXPECT_EQ(list(1, 2, 3), flatten(list(list(1), list(2), list(3))));
   }
 
+  TEST(letm, list)
+  {
+    // clang-format off
+    STATIC_EXPECT_EQ(
+       list(4, 5, 5, 6),
+       letm(list(1, 2), [=](auto x) { return
+       letm(list(3, 4), [=](auto y) { return
+             list(x + y); });
+       }));
+    // clang-format on
+  }
+
   TEST(fapply, list)
   {
     STATIC_EXPECT_EQ(
