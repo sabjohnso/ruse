@@ -371,6 +371,51 @@ namespace ruse::reference {
   };
 
   /**
+   */
+  constexpr auto vacuous_list_sort =
+    curry(nat<2>, []<VacuousList T>(auto cmp, T) {
+      constexpr auto recur = []<VacuousList Left, VacuousList Right>(
+                               auto recur, auto cmp, Left, Right) {
+        if constexpr (Nothing<Right>) {
+          return reverse(Left{});
+
+        } else if constexpr (Nothing<Left>) {
+          return recur(recur, cmp, list(car(Right{})), cdr(Right{}));
+
+        } else if constexpr (cmp(car(Left{}), car(Right{}))) {
+          return recur(recur, cmp, cons(car(Right{}), Left{}), cdr(Right{}));
+
+        } else {
+          return recur(
+            recur,
+            cmp,
+            cdr(Left{}),
+            cons(car(Right{}), cons(car(Left{}), cdr(Right{}))));
+        }
+      };
+      return recur(recur, cmp, nothing, T{});
+    });
+
+  /**
+   * @brief Return the results of filtering the input vacuous list with the
+   * input predicate.
+   */
+  constexpr auto vacuous_list_filter =
+    curry(nat<2>, []<VacuousList T>(auto pred, T) {
+      constexpr auto recur = []<VacuousList U, VacuousList Accum>(
+                               auto recur, auto pred, U, Accum) {
+        if constexpr (Nothing<U>) {
+          return reverse(Accum{});
+        } else if constexpr (pred(car(U{}))) {
+          return recur(recur, pred, cdr(U{}), cons(car(U{}), Accum{}));
+        } else {
+          return recur(recur, pred, cdr(U{}), Accum{});
+        }
+      };
+      return recur(recur, pred, T{}, nothing);
+    });
+
+  /**
    * @brief Return the indicated element of the input list.
    */
   constexpr auto list_ref = curry(nat<2>, []<integer N, List T>(Nat<N>, T xs) {

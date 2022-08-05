@@ -82,6 +82,12 @@ namespace ruse {
   using reference::property_list_ref;
   constexpr auto plist_ref = reference::property_list_ref;
 
+  using reference::vacuous_list_sort;
+  constexpr auto vlist_sort = reference::vacuous_list_sort;
+
+  using reference::vacuous_list_filter;
+  constexpr auto vlist_filter = reference::vacuous_list_filter;
+
   using reference::operator+;
   using reference::operator*;
 

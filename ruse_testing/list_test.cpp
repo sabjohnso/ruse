@@ -221,6 +221,34 @@ namespace ruse::testing {
     STATIC_EXPECT_EQ(list(1, 2, 3), hlist_sort(std::less{}, list(2, 3, 1)));
   }
 
+  TEST(vacuous_list, vlist_sort_1_element)
+  {
+    STATIC_EXPECT_EQ(list(nat<1>), vlist_sort(std::less{}, list(nat<1>)));
+  }
+
+  TEST(vacuous_list, vlist_sort_already_sorted)
+  {
+    EXPECT_EQ(
+      list(nat<1>, nat<2>, nat<3>),
+      vlist_sort(std::less{}, list(nat<1>, nat<2>, nat<3>)));
+  }
+
+  TEST(vacuous_list, vlist_sort)
+  {
+    EXPECT_EQ(
+      list(nat<1>, nat<2>, nat<3>),
+      vlist_sort(std::less{}, list(nat<2>, nat<3>, nat<1>)));
+  }
+
+  TEST(vacuous_list, vlist_filter)
+  {
+    EXPECT_EQ(
+      list(nat<1>, nat<2>),
+      vlist_filter(
+        [](auto x) { return x < nat<3>; },
+        list(nat<1>, nat<2>, nat<3>, nat<4>)));
+  }
+
   TEST(property_list, construction)
   {
     STATIC_EXPECT_TRUE(is_property_list(list("a"_tag(1), "b"_tag(2))));

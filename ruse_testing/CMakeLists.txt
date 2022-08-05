@@ -13,6 +13,7 @@ endmacro()
 
 ruse_add_test(nothing nothing_test nothing_test.cpp)
 ruse_add_test(utility utility_test utility_test.cpp)
+ruse_add_test(nat, nat_test nat_test.cpp)
 ruse_add_test(pair pair_test pair_test.cpp)
 ruse_add_test(type type_test type_test.cpp)
 ruse_add_test(list list_test list_test.cpp)
