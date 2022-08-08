@@ -146,6 +146,11 @@ namespace ruse::testing {
 
   TEST(butlast, list) { STATIC_EXPECT_EQ(list(1, 2), butlast(list(1, 2, 3))); }
 
+  TEST(fmap, list_nothing)
+  {
+    STATIC_EXPECT_EQ(nothing, fmap([](auto x) { return x * x; }, nothing));
+  }
+
   TEST(fmap, list)
   {
     STATIC_EXPECT_EQ(
@@ -254,9 +259,27 @@ namespace ruse::testing {
 
   TEST(vacuous_list, vlist_filter)
   {
-    EXPECT_EQ(
+    STATIC_EXPECT_EQ(
       list(nat<1>, nat<2>),
       vlist_filter(
+        [](auto x) { return x < nat<3>; },
+        list(nat<1>, nat<2>, nat<3>, nat<4>)));
+  }
+
+  TEST(vacuous_list, take_while)
+  {
+    STATIC_EXPECT_EQ(
+      list(nat<1>, nat<2>),
+      vlist_take_while(
+        [](auto x) { return x < nat<3>; },
+        list(nat<1>, nat<2>, nat<3>, nat<4>)));
+  }
+
+  TEST(vacuous_list, take_until)
+  {
+    STATIC_EXPECT_EQ(
+      list(nat<1>, nat<2>),
+      vlist_take_while(
         [](auto x) { return x < nat<3>; },
         list(nat<1>, nat<2>, nat<3>, nat<4>)));
   }

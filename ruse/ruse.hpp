@@ -88,6 +88,12 @@ namespace ruse {
   using reference::vacuous_list_filter;
   constexpr auto vlist_filter = reference::vacuous_list_filter;
 
+  using reference::vacuous_list_take_while;
+  constexpr auto vlist_take_while = reference::vacuous_list_take_while;
+
+  using reference::vacuous_list_take_until;
+  constexpr auto vlist_take_until = reference::vacuous_list_take_until;
+
   using reference::operator+;
   using reference::operator*;
 

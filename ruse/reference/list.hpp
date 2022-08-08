@@ -416,6 +416,35 @@ namespace ruse::reference {
     });
 
   /**
+   * @brief Return the with elements taken from the input list while the input
+   * predicate is true.
+   */
+  constexpr auto vacuous_list_take_while =
+    curry(nat<2>, []<VacuousList T>(auto pred, T) {
+      constexpr auto recur = []<VacuousList U, VacuousList Accum>(
+                               auto recur, auto pred, U, Accum) {
+        if constexpr (Nothing<U>) {
+          return reverse(Accum{});
+        } else if constexpr (not pred(head(U{}))) {
+          return reverse(Accum{});
+        } else {
+          return recur(recur, pred, cdr(U{}), cons(car(U{}), Accum{}));
+        }
+      };
+
+      return recur(recur, pred, T{}, nothing);
+    });
+
+  /**
+   * @brief Return a list containing elements from the start of the input list
+   * until the first element is reach that satisfies the input predicate.
+   */
+  constexpr auto vacuous_list_take_until =
+    curry(nat<2>, []<VacuousList T>(auto pred, T) {
+      return vacuous_list_take_while([=](auto x) { return not pred(x); }, T{});
+    });
+
+  /**
    * @brief Return the indicated element of the input list.
    */
   constexpr auto list_ref = curry(nat<2>, []<integer N, List T>(Nat<N>, T xs) {
@@ -434,8 +463,8 @@ namespace ruse::reference {
   });
 
   /**
-   * @brief Return a list containing the first `n` elements of the input list,
-   * or return the input list if it has `n` or fewer elements
+   * @brief Return a list containing the first `n` elements of the input
+   * list, or return the input list if it has `n` or fewer elements
    */
   constexpr auto take = curry(
     nat<2>,
@@ -452,8 +481,9 @@ namespace ruse::reference {
     });
 
   /**
-   * @brief Return a list with the first `n` elements of the input list removed,
-   * or return `nothing` if the input list has `n` or fewer elements.
+   * @brief Return a list with the first `n` elements of the input list
+   * removed, or return `nothing` if the input list has `n` or fewer
+   * elements.
    */
   constexpr auto drop = curry(
     nat<2>,
@@ -514,8 +544,8 @@ namespace ruse::reference {
     });
 
   /**
-   * @brief Return true if the property list has the indicated tag.  Otherwise
-   * return false.
+   * @brief Return true if the property list has the indicated tag.
+   * Otherwise return false.
    */
   constexpr auto property_list_has_tag =
     curry(nat<2>, [](Tag auto key, PropertyList auto xs) {
