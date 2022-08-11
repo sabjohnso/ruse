@@ -94,6 +94,8 @@ namespace ruse {
   using reference::vacuous_list_take_until;
   constexpr auto vlist_take_until = reference::vacuous_list_take_until;
 
+  using reference::foldl;
+
   using reference::operator+;
   using reference::operator*;
 

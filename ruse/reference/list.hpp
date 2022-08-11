@@ -649,6 +649,21 @@ namespace ruse::reference {
     return nat<N> * xs;
   }
 
+  /**
+   * @brief Return the left fold of the input list with the input function and
+   * initial value.
+   */
+  constexpr auto foldl = curry(nat<3>, [](auto f, auto init, List auto xs) {
+    constexpr auto recur = []<List T>(auto recur, auto f, auto init, T xs) {
+      if constexpr (Nothing<T>) {
+        return init;
+      } else {
+        return recur(recur, f, f(init, car(xs)), cdr(xs));
+      }
+    };
+    return recur(recur, f, init, xs);
+  });
+
   template<List T>
   constexpr auto
   get_pure(type_s<T>)

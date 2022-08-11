@@ -364,4 +364,9 @@ namespace ruse::testing {
     STATIC_EXPECT_EQ(list(1, 2, 1, 2, 1, 2), list(1, 2) * nat<3>);
   }
 
+  TEST(list, fold)
+  {
+    STATIC_EXPECT_EQ(10, foldl(std::plus{}, 0, list(1, 2, 3, 4)));
+  }
+
 } // end of namespace ruse::testing
