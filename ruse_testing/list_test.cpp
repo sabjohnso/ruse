@@ -312,4 +312,56 @@ namespace ruse::testing {
     STATIC_EXPECT_EQ(nothing, drop(nat<10>, list(1, 2, 3, 4)));
   }
 
+  TEST(list, addition_operator)
+  {
+    STATIC_EXPECT_EQ(list(1, 2, 3, 4), list(1, 2) + list(3, 4));
+  }
+
+  TEST(list, addition_operator_associative)
+  {
+    STATIC_EXPECT_EQ(
+      list(1, 2) + (list(3, 4) + list(5, 6)),
+      (list(1, 2) + list(3, 4)) + list(5, 6));
+  }
+
+  TEST(list, multiplication_operator_0_left)
+  {
+    STATIC_EXPECT_EQ(list(), nat<0> * list(1, 2));
+  }
+
+  TEST(list, multiplication_operator_0_right)
+  {
+    STATIC_EXPECT_EQ(list(), list(1, 2) * nat<0>);
+  }
+
+  TEST(list, multiplication_operator_1_left)
+  {
+    STATIC_EXPECT_EQ(list(1, 2), nat<1> * list(1, 2));
+  }
+
+  TEST(list, multiplication_operator_1_right)
+  {
+    STATIC_EXPECT_EQ(list(1, 2), list(1, 2) * nat<1>);
+  }
+
+  TEST(list, multiplication_operator_2_left)
+  {
+    STATIC_EXPECT_EQ(list(1, 2, 1, 2), nat<2> * list(1, 2));
+  }
+
+  TEST(list, multiplication_operator_2_right)
+  {
+    STATIC_EXPECT_EQ(list(1, 2, 1, 2), list(1, 2) * nat<2>);
+  }
+
+  TEST(list, multiplication_operator_3_left)
+  {
+    STATIC_EXPECT_EQ(list(1, 2, 1, 2, 1, 2), nat<3> * list(1, 2));
+  }
+
+  TEST(list, multiplication_operator_3_right)
+  {
+    STATIC_EXPECT_EQ(list(1, 2, 1, 2, 1, 2), list(1, 2) * nat<3>);
+  }
+
 } // end of namespace ruse::testing

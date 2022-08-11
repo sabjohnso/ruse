@@ -612,6 +612,43 @@ namespace ruse::reference {
     u(aux, xs);
   };
 
+  /**
+   * @brief Return the concatenation of the two input lists.
+   */
+  constexpr auto
+  operator+(List auto xs, List auto ys)
+  {
+    return append(xs, ys);
+  };
+
+  /**
+   * @brief Return the concatenation of multiple copies of the input list
+   */
+  template<integer N>
+  constexpr auto
+  operator*(Nat<N>, List auto xs)
+  {
+    constexpr auto recur =
+      []<integer I>(auto recur, Nat<I>, List auto xs, List auto accum) {
+        if constexpr (I == 0) {
+          return accum;
+        } else {
+          return recur(recur, nat<I - 1>, xs, xs + accum);
+        }
+      };
+    return recur(recur, nat<N>, xs, list());
+  }
+
+  /**
+   * @brief Return the concatenation of multiple copies of the input list
+   */
+  template<integer N>
+  constexpr auto
+  operator*(List auto xs, Nat<N>)
+  {
+    return nat<N> * xs;
+  }
+
   template<List T>
   constexpr auto
   get_pure(type_s<T>)
