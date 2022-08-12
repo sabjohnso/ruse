@@ -19,6 +19,8 @@
 namespace ruse {
 
   using reference::apply;
+  using reference::apply_to;
+  using reference::apply_to_list;
   using reference::case_lambda;
 
   using reference::compose;

@@ -55,4 +55,21 @@ namespace ruse::reference {
     return apply_aux(f, list_(arg, args...));
   };
 
+  /**
+   * @brief Return a function that will accept a function that is invocable over
+   * the input arguments and return the result of that application.
+   */
+  constexpr auto apply_to = []<typename... Ts>(Ts... args)
+  {
+    return [=]<Invocable<Ts...> F>(F f) { return f(args...); };
+  };
+
+  /**
+   * @brief Return a function that will accept a function that is invocable over
+   * the input list of arguments and return the result of that application.
+   */
+  constexpr auto apply_to_list = [](List auto arg_list) {
+    return apply(apply_to, arg_list);
+  };
+
 } // namespace ruse::reference

@@ -46,4 +46,40 @@ namespace ruse::testing {
     STATIC_EXPECT_EQ(3, apply(sum, 1, 2, nothing));
   }
 
+  TEST(apply_to, no_args)
+  {
+    constexpr auto fun = apply_to();
+    STATIC_EXPECT_EQ(3, fun([] { return 3; }));
+  }
+
+  TEST(apply_to, one_arg)
+  {
+    constexpr auto fun = apply_to(3);
+    STATIC_EXPECT_EQ(9, fun([](auto x) { return x * x; }));
+  }
+
+  TEST(apply_to, two_args)
+  {
+    constexpr auto fun = apply_to(3, 4);
+    STATIC_EXPECT_EQ(7, fun(std::plus{}));
+  }
+
+  TEST(apply_to_list, no_args)
+  {
+    constexpr auto fun = apply_to_list(nothing);
+    STATIC_EXPECT_EQ(3, fun([] { return 3; }));
+  }
+
+  TEST(apply_to_list, one_arg)
+  {
+    constexpr auto fun = apply_to_list(list(3));
+    STATIC_EXPECT_EQ(9, fun([](auto x) { return x * x; }));
+  }
+
+  TEST(apply_to_list, two_args)
+  {
+    constexpr auto fun = apply_to_list(list(3, 4));
+    STATIC_EXPECT_EQ(7, fun(std::plus{}));
+  }
+
 } // end of namespace ruse::testing

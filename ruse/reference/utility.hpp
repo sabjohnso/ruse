@@ -118,4 +118,7 @@ namespace ruse::reference {
    */
   constexpr auto let = [](auto x, auto f) { return f(x); };
 
+  template<typename F, typename... Ts>
+  concept Invocable = is_invocable_v<F, Ts...>;
+
 } // end of namespace ruse::reference
