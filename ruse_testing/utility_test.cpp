@@ -39,4 +39,11 @@ namespace ruse::testing {
     EXPECT_EQ("abc123"s, sum("abc"s, "123"s));
   }
 
+  TEST(apply, sum)
+  {
+    constexpr auto sum = [](auto... args) { return (0 + ... + args); };
+    STATIC_EXPECT_EQ(10, apply(sum, list(1, 2, 3, 4)));
+    STATIC_EXPECT_EQ(3, apply(sum, 1, 2, nothing));
+  }
+
 } // end of namespace ruse::testing

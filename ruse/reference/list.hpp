@@ -370,7 +370,30 @@ namespace ruse::reference {
     }
   };
 
+  constexpr List auto
+  make_list_(List auto xs)
+  {
+    return xs;
+  }
+
+  constexpr List auto
+  make_list_(auto x, List auto xs)
+  {
+    return cons(x, xs);
+  }
+
+  constexpr List auto
+  make_list_(auto x, auto y, auto z, auto... zs)
+  {
+    return cons(x, make_list_(y, z, zs...));
+  }
+
+  constexpr auto list_ = [](auto x, auto... xs) {
+    return make_list_(x, xs...);
+  };
+
   /**
+   * @brief Return a vacuous list with the elements sorted according to cmp.
    */
   constexpr auto vacuous_list_sort =
     curry(nat<2>, []<VacuousList T>(auto cmp, T) {
