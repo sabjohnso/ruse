@@ -4,6 +4,7 @@
 // ... Ruse header files
 //
 #include <ruse/protocol_traits.hpp>
+#include <ruse/reference/functional.hpp>
 #include <ruse/reference/hoisted.hpp>
 #include <ruse/reference/list.hpp>
 #include <ruse/reference/monoid.hpp>
@@ -16,6 +17,8 @@
 #include <ruse/reference/type.hpp>
 
 namespace ruse {
+
+  using reference::case_lambda;
 
   using reference::compose;
   using reference::curry;
