@@ -10,31 +10,49 @@ namespace ruse {
   namespace details {
 
     template<typename T>
-    void get_fmap(T){}
+    void
+    get_fmap(T)
+    {}
 
     template<typename T>
-    void get_pure(T){}
+    void
+    get_pure(T)
+    {}
 
     template<typename T>
-    void get_fapply(T){}
+    void
+    get_fapply(T)
+    {}
 
     template<typename T>
-    void get_flatmap(T){}
+    void
+    get_flatmap(T)
+    {}
 
     template<typename T>
-    void get_flatten(T){}
+    void
+    get_flatten(T)
+    {}
 
     template<typename T>
-    void get_extract(T){}
+    void
+    get_extract(T)
+    {}
 
     template<typename T>
-    void get_extend(T){}
+    void
+    get_extend(T)
+    {}
 
     template<typename T>
-    void get_duplicate(T){}
+    void
+    get_duplicate(T)
+    {}
 
     template<typename T>
-    void get_zapply(T){}
+    void
+    get_zapply(T)
+    {}
 
     template<typename T>
     constexpr T static_const{};
@@ -130,15 +148,22 @@ namespace ruse {
     };
   } // end of namespace details
 
-  constexpr const auto& get_fmap      = details::static_const<details::get_fmap_fn>;
-  constexpr const auto& get_pure      = details::static_const<details::get_pure_fn>;
-  constexpr const auto& get_fapply    = details::static_const<details::get_fapply_fn>;
-  constexpr const auto& get_flatmap   = details::static_const<details::get_flatmap_fn>;
-  constexpr const auto& get_flatten   = details::static_const<details::get_flatten_fn>;
-  constexpr const auto& get_extract   = details::static_const<details::get_extract_fn>;
-  constexpr const auto& get_extend    = details::static_const<details::get_extend_fn>;
-  constexpr const auto& get_duplicate = details::static_const<details::get_duplicate_fn>;
-  constexpr const auto& get_zapply    = details::static_const<details::get_zapply_fn>;
+  constexpr const auto& get_fmap = details::static_const<details::get_fmap_fn>;
+  constexpr const auto& get_pure = details::static_const<details::get_pure_fn>;
+  constexpr const auto& get_fapply =
+    details::static_const<details::get_fapply_fn>;
+  constexpr const auto& get_flatmap =
+    details::static_const<details::get_flatmap_fn>;
+  constexpr const auto& get_flatten =
+    details::static_const<details::get_flatten_fn>;
+  constexpr const auto& get_extract =
+    details::static_const<details::get_extract_fn>;
+  constexpr const auto& get_extend =
+    details::static_const<details::get_extend_fn>;
+  constexpr const auto& get_duplicate =
+    details::static_const<details::get_duplicate_fn>;
+  constexpr const auto& get_zapply =
+    details::static_const<details::get_zapply_fn>;
 
   //
   // ...  monoids
@@ -161,17 +186,23 @@ namespace ruse {
   template<typename T>
   concept Monoid = HasOp<T> && HasId<T>;
 
-  struct additive {};
+  struct additive
+  {};
 
-  struct zero_s {} constexpr zero{};
+  struct zero_s
+  {
+  } constexpr zero{};
 
   template<typename T>
   concept AdditiveMonoid =
     Monoid<T> && std::same_as<typename monoid_traits<T>::color, additive>;
 
-  struct multiplicative {};
+  struct multiplicative
+  {};
 
-  struct one_s {} constexpr one{};
+  struct one_s
+  {
+  } constexpr one{};
 
   template<typename T>
   concept MultiplicativeMonoid =

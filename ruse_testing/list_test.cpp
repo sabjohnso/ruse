@@ -179,6 +179,18 @@ namespace ruse::testing {
     // clang-format on
   }
 
+  TEST(letm, list_pure)
+  {
+    // clang-format off
+    STATIC_EXPECT_EQ(
+       list(4, 5, 5, 6),
+       letm(list(1, 2), [=](auto x) { return
+       letm(list(3, 4), [=](auto y) { return
+             list(x + y); });
+       }));
+    // clang-format on
+  }
+
   TEST(fapply, list)
   {
     STATIC_EXPECT_EQ(
@@ -314,6 +326,7 @@ namespace ruse::testing {
 
   TEST(list, addition_operator)
   {
+    static_assert(AdditiveMonoid<decltype(list(1, 2))>);
     STATIC_EXPECT_EQ(list(1, 2, 3, 4), list(1, 2) + list(3, 4));
   }
 
@@ -322,6 +335,18 @@ namespace ruse::testing {
     STATIC_EXPECT_EQ(
       list(1, 2) + (list(3, 4) + list(5, 6)),
       (list(1, 2) + list(3, 4)) + list(5, 6));
+  }
+
+  TEST(list, addition_operator_id)
+  {
+    STATIC_EXPECT_EQ(list(1, 2), list(1, 2) + nothing);
+    STATIC_EXPECT_EQ(list(1, 2), nothing + list(1, 2));
+  }
+
+  TEST(list, addition_operator_zero)
+  {
+    STATIC_EXPECT_EQ(list(1, 2), list(1, 2) + zero);
+    STATIC_EXPECT_EQ(list(1, 2), zero + list(1, 2));
   }
 
   TEST(list, multiplication_operator_0_left)

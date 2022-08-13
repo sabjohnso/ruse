@@ -12,6 +12,7 @@
 #include <ruse/reference/pair.hpp>
 #include <ruse/reference/parser.hpp>
 #include <ruse/reference/protocol.hpp>
+#include <ruse/reference/pure.hpp>
 #include <ruse/reference/string.hpp>
 #include <ruse/reference/tag.hpp>
 #include <ruse/reference/type.hpp>
@@ -144,6 +145,11 @@ namespace ruse {
   using reference::Tag;
   using reference::Tagged;
   using reference::operator""_tag;
+
+  using reference::is_pure;
+  using reference::is_pure_type;
+  using reference::pure;
+  using reference::Pure;
 
   using reference::duplicate;
   using reference::extend;

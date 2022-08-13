@@ -635,14 +635,14 @@ namespace ruse::reference {
     u(aux, xs);
   };
 
-  /**
-   * @brief Return the concatenation of the two input lists.
-   */
-  constexpr auto
-  operator+(List auto xs, List auto ys)
-  {
-    return append(xs, ys);
-  };
+  // /**
+  //  * @brief Return the concatenation of the two input lists.
+  //  */
+  // constexpr auto
+  // operator+(List auto xs, List auto ys)
+  // {
+  //   return append(xs, ys);
+  // };
 
   /**
    * @brief Return the concatenation of multiple copies of the input list
@@ -750,3 +750,15 @@ namespace ruse::reference {
   }
 
 } // namespace ruse::reference
+
+namespace ruse {
+
+  template<reference::List T>
+  struct monoid_traits<T>
+  {
+    constexpr static auto op = reference::append;
+    constexpr static auto id = reference::nothing;
+    using color = additive;
+  };
+
+} // end of namespace ruse
