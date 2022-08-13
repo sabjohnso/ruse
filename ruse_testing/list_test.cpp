@@ -167,7 +167,7 @@ namespace ruse::testing {
     STATIC_EXPECT_EQ(list(1, 2, 3), flatten(list(list(1), list(2), list(3))));
   }
 
-  TEST(letm, list)
+  TEST(letm, list_letm)
   {
     // clang-format off
     STATIC_EXPECT_EQ(
@@ -179,14 +179,14 @@ namespace ruse::testing {
     // clang-format on
   }
 
-  TEST(letm, list_pure)
+  TEST(letm, list_letm_pure)
   {
     // clang-format off
     STATIC_EXPECT_EQ(
        list(4, 5, 5, 6),
        letm(list(1, 2), [=](auto x) { return
        letm(list(3, 4), [=](auto y) { return
-             list(x + y); });
+             pure(x + y); });
        }));
     // clang-format on
   }
@@ -195,6 +195,12 @@ namespace ruse::testing {
   {
     STATIC_EXPECT_EQ(
       list(1, 4, 9), fapply(list([](auto x) { return x * x; }), list(1, 2, 3)));
+  }
+
+  TEST(fapply, pure_list)
+  {
+    STATIC_EXPECT_EQ(
+      list(1, 4, 9), fapply(pure([](auto x) { return x * x; }), list(1, 2, 3)));
   }
 
   TEST(extract, list) { STATIC_EXPECT_EQ(1, extract(list(1, 2, 3))); }
