@@ -1,6 +1,8 @@
 #!/bin/bash
 set -eu
 
+readonly format_command=clang-format-13 --style=file --fallback-style=none
+
 readonly scriptpath=$0;
 readonly scriptdir=$(dirname $0)
 readonly srcdir=$scriptdir/../ruse
@@ -14,7 +16,7 @@ function main(){
 function format_file(){
     local inpfile=$1; shift
     local tmpfile=$(mktemp)
-    clang-format --style=file $inpfile > $tmpfile
+    $format_command  $inpfile > $tmpfile
     if [[ $(diff -q $inpfile $tmpfile) ]]
     then
         echo "reformatting $inpfile"
