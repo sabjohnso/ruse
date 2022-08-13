@@ -62,12 +62,14 @@ namespace ruse::experimental::testing {
     STATIC_EXPECT_FALSE(adjacent(character<'f'>, character<'h'>));
   }
 
-  TEST(character_value, overlap){
+  TEST(character_value, overlap)
+  {
     STATIC_EXPECT_TRUE(overlap(character<'f'>, character<'f'>));
   }
 
-  TEST(character_value, overlap_faile){
-      STATIC_EXPECT_FALSE(overlap(character<'f'>, character<'g'>));
+  TEST(character_value, overlap_faile)
+  {
+    STATIC_EXPECT_FALSE(overlap(character<'f'>, character<'g'>));
   }
 
   TEST(chacter_range, construction)
@@ -75,45 +77,54 @@ namespace ruse::experimental::testing {
     STATIC_EXPECT_TRUE(is_character_range(range<'a', 'z'>));
   }
 
-  TEST(character_range, adjacent1){
+  TEST(character_range, adjacent1)
+  {
     STATIC_EXPECT_TRUE(adjacent(range<'a', 'd'>, range<'e', 'f'>));
   }
 
-  TEST(character_range, adjacent2){
+  TEST(character_range, adjacent2)
+  {
     STATIC_EXPECT_TRUE(adjacent(range<'e', 'f'>, range<'a', 'd'>));
   }
 
-  TEST(character_range, adjacent_fail1){
+  TEST(character_range, adjacent_fail1)
+  {
     STATIC_EXPECT_FALSE(adjacent(range<'e', 'f'>, range<'a', 'c'>));
   }
 
-  TEST(chacacter_range, overlap){
+  TEST(chacacter_range, overlap)
+  {
     STATIC_EXPECT_TRUE(overlap(range<'e', 'h'>, range<'a', 'f'>));
   }
 
-  TEST(character_range, less_than_pass_lower_bound_is_lower){
+  TEST(character_range, less_than_pass_lower_bound_is_lower)
+  {
     STATIC_EXPECT_TRUE(range<'a', 'c'> < range<'b', 'c'>);
   }
 
-  TEST(character_range, less_than_pass_upper_bound_is_lower){
+  TEST(character_range, less_than_pass_upper_bound_is_lower)
+  {
     STATIC_EXPECT_TRUE(range<'b', 'c'> < range<'b', 'd'>);
   }
 
-  TEST(character_range, less_than_fail_lower_bound_is_lower){
-    STATIC_EXPECT_FALSE(range<'b', 'c'> < range<'a', 'c'> );
+  TEST(character_range, less_than_fail_lower_bound_is_lower)
+  {
+    STATIC_EXPECT_FALSE(range<'b', 'c'> < range<'a', 'c'>);
   }
 
-  TEST(character_range, less_than_fail_upper_bound_is_lower){
-    STATIC_EXPECT_FALSE(range<'a', 'd'> < range<'a', 'c'> );
+  TEST(character_range, less_than_fail_upper_bound_is_lower)
+  {
+    STATIC_EXPECT_FALSE(range<'a', 'd'> < range<'a', 'c'>);
   }
 
-  TEST(character_range, less_than_fail_equal_ranges){
+  TEST(character_range, less_than_fail_equal_ranges)
+  {
     STATIC_EXPECT_FALSE(range<'a', 'c'> < range<'a', 'c'>);
   }
 
-  TEST(character_class_primitive, less_than_pass1){
+  TEST(character_class_primitive, less_than_pass1)
+  {
     STATIC_EXPECT_FALSE(character<'a'> < range<'a', 'c'>);
   }
-
 
 } // end of namespace ruse::experimental::testing

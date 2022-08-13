@@ -16,10 +16,11 @@ namespace ruse::experimental {
     []<CharacterClassPrimitive... Primitives>(Primitives...)
   {
     constexpr auto recur =
-      []<CharacterClassPrimitive P1,
+      [
+      ]<CharacterClassPrimitive P1,
         CharacterClassPrimitive P2,
-        CharacterClassPrimitive... Ps>
-        (auto recur, P1, P2, Ps...) {
+        CharacterClassPrimitive... Ps>(auto recur, P1, P2, Ps...)
+    {
 
       if constexpr (P1{} < P2{}) {
         if constexpr (sizeof...(Ps) > 0) {
@@ -58,27 +59,24 @@ namespace ruse::experimental {
     nat<2>,
     []<CharacterClassPrimitive auto... Ps, Character auto c>(
       CharacterClass<Ps...>,
-      character_value<c>)
-  {
-    constexpr auto recur = [](auto recur, auto p, auto ... ps){
-      if constexpr (overlap(p, character<c>)){
-        return true;
-      } else {
-        if constexpr (sizeof ... (ps) == 0){
-          return false;
-        }else {
-          return recur( recur, ps ...);
+      character_value<c>) {
+      constexpr auto recur = [](auto recur, auto p, auto... ps) {
+        if constexpr (overlap(p, character<c>)) {
+          return true;
+        } else {
+          if constexpr (sizeof...(ps) == 0) {
+            return false;
+          } else {
+            return recur(recur, ps...);
+          }
         }
+      };
+
+      if constexpr (sizeof...(Ps) > 0) {
+        return recur(recur, Ps...);
+      } else {
+        return false;
       }
-    };
-
-    if constexpr (sizeof...(Ps) > 0){
-      return recur(recur, Ps ...);
-    } else {
-      return false;
-    }
-  });
-
-
+    });
 
 } // end of namespace ruse::experimental

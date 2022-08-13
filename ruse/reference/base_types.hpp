@@ -2,8 +2,7 @@
 
 #include <ruse/reference/import.hpp>
 
-
-namespace ruse::reference{
+namespace ruse::reference {
 
   using integer = ptrdiff_t;
 

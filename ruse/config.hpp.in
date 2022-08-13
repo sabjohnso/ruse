@@ -1,5 +1,6 @@
 #pragma once
 
+// clang-format off
 namespace ruse::Config
 {
   struct Info {
@@ -29,4 +30,7 @@ namespace ruse::Config
       }
     };
   };
+
 } // end of namespace ruse::Config
+
+// clang-format on

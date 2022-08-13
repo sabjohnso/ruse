@@ -5,11 +5,11 @@
 //
 #include <ruse/protocol_traits.hpp>
 
-namespace ruse::reference{
+namespace ruse::reference {
 
-  constexpr auto mappend = curry(nat<2>, []<Monoid T>(T mx, Monoid auto my){
-      return monoid_traits<T>::op(mx, my);
-    });
+  constexpr auto mappend = curry(nat<2>, []<Monoid T>(T mx, Monoid auto my) {
+    return monoid_traits<T>::op(mx, my);
+  });
 
   template<AdditiveMonoid T, AdditiveMonoid U>
   constexpr auto
@@ -32,10 +32,10 @@ namespace ruse::reference{
     return monoid_traits<T>::op(monoid_traits<T>::id, x);
   };
 
-
   template<MultiplicativeMonoid T, MultiplicativeMonoid U>
   constexpr auto
-  operator *(T x, U y){
+  operator*(T x, U y)
+  {
     return monoid_traits<T>::op(x, y);
   }
 
@@ -52,6 +52,5 @@ namespace ruse::reference{
   {
     return monoid_traits<T>::op(monoid_traits<T>::id, x);
   };
-
 
 } // end of namespace ruse::reference

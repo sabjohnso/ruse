@@ -38,12 +38,14 @@ namespace ruse::reference {
     second_type second;
 
     friend constexpr bool
-    operator ==(pair xs, Pair auto ys){
+    operator==(pair xs, Pair auto ys)
+    {
       return (xs.first == ys.first) && (xs.second == ys.second);
     }
 
     friend constexpr bool
-    operator !=(pair xs, Pair auto ys){
+    operator!=(pair xs, Pair auto ys)
+    {
       return !(xs == ys);
     }
   };
