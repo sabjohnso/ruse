@@ -53,6 +53,7 @@ namespace ruse {
   using reference::Pair;
 
   using reference::AssociationList;
+  using reference::BinaryList;
   using reference::HomogeneousAssociationList;
   using reference::HomogeneousList;
   using reference::is_homogeneous_list;
@@ -61,8 +62,11 @@ namespace ruse {
   using reference::is_unitary_list;
   using reference::List;
   using reference::ListLike;
+  using reference::ListOfLength;
+  using reference::ListOfPositiveLength;
   using reference::NonemptyList;
   using reference::PropertyList;
+  using reference::TernaryList;
   using reference::UnitaryList;
   constexpr auto is_hlist = reference::is_homogeneous_list;
   using reference::is_vacuous_list;

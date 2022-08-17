@@ -97,11 +97,36 @@ namespace ruse::reference {
   };
 
   /**
+   * @brief A concept for lists of a specified length
+   */
+  template<typename T, integer N>
+  concept ListOfLength = List<T> and length_type(type<T>)
+  == N;
+
+  /**
+   * @brief A concept for lists of a positive specified length
+   */
+  template<typename T, integer N>
+  concept ListOfPositiveLength =
+    (N > 0) && NonemptyList<T>&& ListOfLength<T, N>;
+
+  /**
    * @brief A concept for unitary lists
    */
   template<typename T>
-  concept UnitaryList = NonemptyList<T> and length_type(type<T>)
-  == 1;
+  concept UnitaryList = ListOfPositiveLength<T, 1>;
+
+  /**
+   * @brief A concept for two-element lists
+   */
+  template<typename T>
+  concept BinaryList = ListOfPositiveLength<T, 2>;
+
+  /**
+   * @brief A concept for three-element lists
+   */
+  template<typename T>
+  concept TernaryList = ListOfPositiveLength<T, 3>;
 
   /**
    * @brief Return `true` if the input is a unitary list.  Otherwise, return

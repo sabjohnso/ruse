@@ -1,201 +1,145 @@
 ruse
 ====
 
+## Objective
+
+A meta-programming library enabling the low-cost development of
+low-latency and high performance code and simple integration with
+various Lisp dialects, primarily [Racket](https://racket-lang.org)
+
+## Facilities
+
+### Compile-time list processing
+
+### Compile-time code transformation
+
+### Alternative record type definitions
 ```c++
-namespace MossUDP {
+constexpr auto point = (record, "point"_name,
+ (("x"_field, type<double>),
+  ("y"_field, type<double>),
+  ("z"_field, type<double>)));
 
-  RUSE_ENUM_CLASS(
-    packet_type,
-    char,
-    ((data_packet, 'U', "a data packet (carries 0 or more data messages"_doc),
-     (heartbeat, 'H', "heartbeat"_doc),
-     (end_of_session, 'E', "end of session"_doc)));
+constexpr auto p = make(point, 1.0, 2.0, 3.0);
 
-  constexpr auto moss_packet = record{
-    .name = "moss_packet"_,
-    .attributes =
-      list(block_size = "packet_length"_, dispatch_key = "packet_length"_),
-    .slots = list(
-      slot{.name = "packet_length"_, type = num<4>},
-      slot{.name = "session"_,       type = alnum<10>},
-      slot{.name = "sequence"_,      type = num<4>},
-      slot{.name = "packet_type"_,   type = type<packet_type>})};
+static_assert(p == list("point"_tag(
+                          list("x"_tag(1.0),
+                               "y"_tag(2.0),
+                               "z"_tag(3.0)))));
 
-  constexpr auto moss_block = record{
-    .name = "moss_block"_,
-    .attributes = list(payload_size = "message_length"_)
-    .slots = list(slot{.name = "message_length"_, .type = num<2>})};
-
-  constexpr auto moss_heartbeat = record{
-    .name = "message"_,
-    .slots = list(slot{.name = "next_sequence_number", .type = num<4>})};
-
-  // moss is a dispatching sequence block header
-
-  constexpr auto moss_parser = lambda("payload-parser"_)(
-    dispatch(moss_packet)
-    | cons(packet_type::data_packet,    block_sequence(moss_block) >> "payload_parser"_ ),
-    | cons(packet_type::heartbeat,      moss_heartbeat),
-    | cons(packet_type::end_of_session, nothing));
-
-} // namespace MossUDP
-```
-
-``` c++
-list(lambda, list("x"_sym "y"_sym),
-     list(add, "x"_sym, "y"_sym));
-```
-
-```scheme
-(lambda (x y) (add x y))
-```
-
-``` c++
-
-constexpr auto let = syntax_parse(
-  "let"_sym,
-  list(list(_, list(list("x"_sym[id], "mx"_sym[expr])), "body"_sym, __1),
-       syntax_quote(
-         list(list(lambda, list("x"_sym), "body"_sym, __) "mx"_sym))),
-  list(list(_, list(list("x"_sym[id], "mx"_sym[expr]),
-                    "more_bindings"_sym[expr], __) "body"_sym, __1),
-       syntax_quote(
-         list(lambda, list("x"_sym)
-              list("let"_sym, list("more_bindings"_sym, __), "body"_sym, __)))));
-```
-
-``` c++
-ˡ(let, ˡ(ˡ("x"_sym, 1),
-         ˡ("y"_sym, 2)),
-  ˡ(add, "x"_sym, "y"_sym))
-```
-
-
-```scheme
-
-(syntax-parser let
- [(_ ([x:id e:expr]) body:expr ...+)
-  #'((λ (x) body ...) e)]
- [(_ ([x:id e:expr] more-bindings:expr ...) body:expr ...+)
-  #'((λ (x)
-       (let (more-bindings ...)
-         body ...)) e)])
+static_assert(lookup("x"_field) == 1.0);
+static_assert(lookup("y"_field) == 2.0);
+static_assert(lookup("z"_field) == 3.0);
 
 ```
 
-```scheme
-(let ([x 1]
-      [y 2])
-  (add x y))
-```
+### Language and grammar oriented programming
 
+### Lisp style macro expansion
+#### Syntax Transformers
+#### Symbol Macros
+#### Character Macros
 
+### Reflection
+#### Schema generation from types
+#### Formatting and serialization
+#### Documentation generation
+
+### JSON and JSON Schema
+#### JSExpr
 ```c++
-
-syntax let = 
-  syntax_parser(
-    datum_literals(=),
-
-  [let(x:id = e:expr)(body:expr),
-   syntax_quote([&](auto const& x){ return body }(e))],
-
-  [let(x:id = e:expr, more_bindings:expr ...)( body:expr)
-   syntax_quote([&](auto const& x){ return let(more_bindings ...)(body);}(e))]);
-
+obj(prop("triangle",
+         arr(
+           obj(prop("point",
+                    obj(prop("x", 0.0),
+                        prop("y", 0.0),
+                        prop("z", 0.0)))),
+           obj(prop("point",
+                    obj(prop("x", 0.0),
+                        prop("y", 1.0),
+                        prop("z", 0.0)))),
+           obj(prop("point",
+                    obj(prop("x", 0.0),
+                        prop("y", 0.0),
+                        prop("z", 1.0)))))));
 ```
 
+#### JSON Schema based concepts for flexible typing
 ```c++
+constexpr static auto point_schema = json_schema<
+  obj(prop("type", "object"),
+      prop("properties",
+         obj(prop("x", obj(prop("type", "number"))),
+             prop("y", obj(prop("type", "number"))),
+             prop("z", obj(prop("type", "number"))))),
+      prop("required", arr("x", "y", "z"))
+      prop("additionalProperties", false))>;
 
-syntax letM =
-  syntax_rules(
-    [=],
-    [letM(x = me)(body),
-     bindM(me, [&](const auto& x){ return body; })]
-
-    [letM(x = me, more_bindings ...+)(body)
-     bindM(me, [&](const auto& x){
-       return letM(more_bindings ...)(body)})]);
+template<typename T>
+concept Point = JSONSchema<T, point_schema>;
 ```
 
-```c++
-letM(x = list(1, 2),
-     y = list(3, 4))(
-  returnM(x + y));
-```
-
-```c++
-
-letM((("x"_, list(1, 2)),
-      ("y"_, list(3, 4))),
-     returnM("x"_ + "y"_));
-
-lambda(("x"_, "y"_) "x"_ + "y"_)
-
-constexpr auto addM = eval(
-  lambda(
-    ("xs"_, "ys"_),
-    letM(("x"_ = "xs"_,
-          "y"_ = "ys"_),
-         returnM("x"_ + "y"_))));
-```
-
-```c++
-// definition of a module that provides a function sqr
-constexpr auto squaring_module =  module(
-  ruse, // ruse is the module language: the language used to expand
-
-  type(list(a),
-       cons(a, list(a)),
-       nil),
-  
-  let(make_list() = nil),
-  let(make_list(x, xs ...) = cons(x, make_list(xs ...))),
-
-  let(rappend(nil, ys) = ys),
-  let(rappend(cons(x, xs),  ys) = rappend(xs, cons(x, ys))),
-
-  let(reverse(xs) = rappend(xs, nil)),
-
-  let(append(xs, ys) = rappend(reverse(xs), ys)),
-
-  let(flatmap(f, nil) = nil),
-  let(flatmap(f, cons(x, xs)) = append(f(x), flatmap(f, xs))),
-  
-```
-
-```scheme
-(module functors ruse
-
-  (provide functor)
-  
-  (protocol (functor [M : (-> type type)])
-    (decl (fmap [a : type] [b : type])
-      (-> (-> a b) (M a) (M b)))))
-
-
-(module lists ruse
-  (type (list 'a)
-    (cons 'a (list 'a))
-    nil)
-
-  (let (list) nil)
-  (let (list x xs ...) (cons x (list xs ...)))
-
-  (let (rappend nil ys) ys)
-  (let (rappend (cons x xs) ys) (rappend xs (cons x ys)))
-
-
-  (let (reverse xs) (rappend xs nil))
-
-  (let (append xs ys) (rappend (reverse xs) ys))
-
-
-  (let (flatmap f nil) nil)
-  (let (flatmap f (cons x xs))
-    (append (f x) (flatmap f xs))))
-
-
-
-
-
-```
+### Work
+ - [ ] Code Generation
+ - [ ] Compile-time execution
+    - [ ] Modules
+       - [ ] Provide
+       - [ ] Require
+ - [ ] JSON
+    - [ ] JSExpr
+    - [ ] JSON Schema
+       - [ ] Validation
+       - [ ] Schema concepts
+ - [ ] Macro expansion
+    - [ ] Syntax transformers
+    - [ ] Symbol macros
+    - [ ] Character macros
+ - [ ] Racket interoperability
+ - [ ] Records
+    - [ ] Testing
+    - [ ] Implementation
+    - [ ] Documentation
+    - [ ] Migration to reference
+ - [ ] Reader
+    - [x] Testing
+    - [x] Implementation
+    - [ ] Documentation
+    - [ ] Migration to reference
+    - [ ] Generic `ask`
+    - [ ] Generic `asks`
+    - [ ] Generic `local`
+ - [ ] Reflection
+    - [ ] Enumerations
+       - [ ] Type name
+       - [ ] Enumerated Value Names
+       - [ ] Iterating over enumerated values
+       - [ ] Serialization and Formatting
+    - [ ] Structs and Classes
+       - [ ] Type name
+       - [ ] Data Member Names
+       - [ ] Data Member Types
+       - [ ] Iterating over data members
+       - [ ] Member function names
+       - [ ] Member function signatures
+       - [ ] Serialization and Formatting
+ - [ ] State
+    - [x] Testing
+    - [x] Implementation
+    - [x] Documenation
+    - [ ] Migration to reference
+    - [-] Generic `get`
+      The added complexity is concidered to high for the benefit
+    - [-] Generic `select`
+      The added complexity is concidered to high for the benefit
+    - [-] Generic `put`
+      The added complexity is concidered to high for the benefit
+    - [-] Generic `modify`
+      The added complexity is concidered to high for the benefit
+    - [-] Generic `run_state`
+      The added complexity is concidered to high for the benefit
+ - [ ] Contextual
+    - [ ] Testing
+    - [ ] Implementation
+    - [ ] Documentation
+    - [ ] Comparison with existing protocols for lists, type, state, and reader
+    - [ ] Migration to reference if comparison is satisfactory
