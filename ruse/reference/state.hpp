@@ -3,9 +3,9 @@
 //
 // ... ruse header files
 //
-#include <ruse/ruse.hpp>
+#include <ruse/reference/list.hpp>
 
-namespace ruse::experimental {
+namespace ruse::reference {
 
   template<typename T>
   concept StateResult = BinaryList<T>;
@@ -146,4 +146,4 @@ namespace ruse::experimental {
     };
   }
 
-} // end of namespace ruse::experimental
+} // namespace ruse::reference

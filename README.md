@@ -122,11 +122,11 @@ concept Point = JSONSchema<T, point_schema>;
        - [ ] Member function names
        - [ ] Member function signatures
        - [ ] Serialization and Formatting
- - [ ] State
+ - [x] State
     - [x] Testing
     - [x] Implementation
     - [x] Documenation
-    - [ ] Migration to reference
+    - [x] Migration to reference
     - [-] Generic `get`
       The added complexity is concidered to high for the benefit
     - [-] Generic `select`

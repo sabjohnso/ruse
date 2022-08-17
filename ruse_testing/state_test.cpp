@@ -12,12 +12,10 @@
 //
 // ... ruse header files
 //
-#include <ruse/experimental/state.hpp>
 #include <ruse/ruse.hpp>
-#include <unistd.h>
 
 using namespace std::literals;
-namespace ruse::experimental::testing {
+namespace ruse::testing {
 
   TEST(state, make_state)
   {
@@ -180,4 +178,4 @@ namespace ruse::experimental::testing {
         input::up,
         input::off))));
   }
-} // namespace ruse::experimental::testing
+} // namespace ruse::testing
