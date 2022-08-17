@@ -12,8 +12,37 @@
 //
 #include <ruse/ruse.hpp>
 
-namespace ruse {
-  template<reference::Vacuous T>
+namespace ruse::reference {
+
+  template<UnitaryString T>
+  std::ostream&
+  operator<<(std::ostream& os, T str)
+  {
+    return os << car(str);
+  }
+
+  template<String T>
+  std::ostream&
+  operator<<(std::ostream& os, T str)
+  {
+    return os << car(str) << cdr(str);
+  }
+
+  template<HoistedString T>
+  std::ostream&
+  operator<<(std::ostream& os, T)
+  {
+    return os << T::values;
+  }
+
+  template<HoistedString T>
+  std::ostream&
+  operator<<(std::ostream& os, tag<T>)
+  {
+    return os << '"' << T::values << "\"_tag";
+  }
+
+  template<Vacuous T>
   std::ostream&
   operator<<(std::ostream& os, T x)
   {
@@ -40,9 +69,7 @@ namespace ruse {
 
   template<auto Parser, auto... Parsers>
   std::ostream&
-  operator<<(
-    std::ostream& os,
-    reference::sequence_parser<Parser, Parsers...> parser)
+  operator<<(std::ostream& os, sequence_parser<Parser, Parsers...> parser)
   {
     os << "sequence_parser<";
     print_delimited(os, parser);
@@ -52,21 +79,21 @@ namespace ruse {
 
   template<typename T>
   std::ostream&
-  operator<<(std::ostream& os, reference::result_parser<T>)
+  operator<<(std::ostream& os, result_parser<T>)
   {
     os << "result(" << T{} << ")";
     return os;
   }
 
   std::ostream&
-  operator<<(std::ostream& os, reference::item_parser)
+  operator<<(std::ostream& os, item_parser)
   {
     return os << "item";
   }
 
   template<typename T>
   std::ostream&
-  operator<<(std::ostream& os, reference::empty_parser<T>)
+  operator<<(std::ostream& os, empty_parser<T>)
   {
     return os << "empty(" << T{} << ")";
   }
@@ -94,9 +121,15 @@ namespace ruse {
       return os << "hoisted_list<>{}";
     } else {
       os << "hoisted_list<" << head(values);
-      reference::u(aux, tail(values));
+      u(aux, tail(values));
       return os << ">{}";
     }
+  }
+
+  std::ostream&
+  operator<<(std::ostream& os, const nothing_s&)
+  {
+    return os << "nothing";
   }
 
   template<List T>
@@ -118,4 +151,8 @@ namespace ruse {
     }
   }
 
-} // end of namespace ruse
+} // namespace ruse::reference
+
+namespace ruse {
+  using reference::operator<<;
+} // namespace ruse

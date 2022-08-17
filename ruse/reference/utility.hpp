@@ -8,6 +8,33 @@
 #include <ruse/reference/type.hpp>
 
 namespace ruse::reference {
+
+  template<typename T, typename U>
+  concept Distinct = not same_as<T, U>;
+
+  template<typename T, Distinct<T> U>
+  constexpr bool
+  operator==(T, U)
+  {
+    return false;
+  }
+
+  /**
+   */
+  template<typename T, typename U>
+  concept EqualityComparable = requires(T x, U y)
+  {
+    {
+      x == y
+      } -> convertible_to<bool>;
+    {
+      x != y
+      } -> convertible_to<bool>;
+  };
+
+  template<typename T, typename U>
+  concept NotEqualityComparable = not EqualityComparable<T, U>;
+
   /**
    * @brief U combinator introducing recursion.
    */
@@ -120,5 +147,9 @@ namespace ruse::reference {
 
   template<typename F, typename... Ts>
   concept Invocable = is_invocable_v<F, Ts...>;
+
+  constexpr auto twc = [](auto x) { return x + x; };
+
+  constexpr auto sqr = [](auto x) { return x * x; };
 
 } // end of namespace ruse::reference

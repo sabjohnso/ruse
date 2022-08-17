@@ -113,6 +113,13 @@ namespace ruse::reference {
   concept HoistedList = is_hoisted_list_type(type<T>);
 
   /**
+   * @brief A concept for homogeneous hoisted lists
+   */
+  template<typename T>
+  concept HomogeneousHoistedList =
+    HoistedList<T> && HomogeneousList<decltype(T::values)>;
+
+  /**
    * @brief Return `true` if the input is a hoisted list. Otherwise, return
    * `false`.
    */

@@ -44,7 +44,13 @@ namespace ruse::reference {
     }
 
     friend constexpr bool
-    operator!=(pair xs, Pair auto ys)
+    operator==(pair, auto)
+    {
+      return false;
+    }
+
+    friend constexpr bool
+    operator!=(pair xs, auto ys)
     {
       return !(xs == ys);
     }

@@ -28,7 +28,14 @@ namespace ruse::reference {
   template<typename T>
   concept String = HomogeneousList<T> && is_character_type(head_type(type<T>));
 
+  template<typename T>
+  concept UnitaryString = String<T> and UnitaryList<T>;
+
   constexpr auto is_string = []<typename T>(T) { return String<T>; };
+
+  template<typename T>
+  concept HoistedString =
+    HomogeneousHoistedList<T> && String<decltype(T::values)>;
 
   template<Character Char, integer N>
   struct fixed_string

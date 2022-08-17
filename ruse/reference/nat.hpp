@@ -67,4 +67,13 @@ namespace ruse::reference {
   template<integer N>
   constexpr Nat<N> nat{};
 
+  constexpr auto add1 = []<integer N>(Nat<N>) { return nat<N + 1>; };
+  constexpr auto sub1 = []<integer N>(Nat<N>) {
+    if constexpr (N == 0) {
+      return nat<0>;
+    } else {
+      return nat<N - 1>;
+    }
+  };
+
 } // end of namespace ruse::reference

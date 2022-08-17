@@ -68,6 +68,17 @@ namespace ruse::reference {
     return flatmap(f, mx);
   };
 
+  constexpr auto beginm = [](auto expr, auto... exprs) {
+    constexpr auto recur = [](auto recur, auto expr, auto... exprs) {
+      if constexpr (sizeof...(exprs) == 0) {
+        return expr;
+      } else {
+        return letm(expr, [=](auto) { return recur(recur, exprs...); });
+      }
+    };
+    return recur(recur, expr, exprs...);
+  };
+
   constexpr auto flatten = curry(
     nat<1>,
     []<Monad T>(T mmx) -> Monad auto {

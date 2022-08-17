@@ -72,4 +72,12 @@ namespace ruse::reference {
     return apply(apply_to, arg_list);
   };
 
+  constexpr auto cut = [](auto f, auto... xs) {
+    return [=](auto... ys) { return f(xs..., ys...); };
+  };
+
+  constexpr auto cute = [](auto f, auto... ys) {
+    return [=](auto... xs) { return f(xs..., ys...); };
+  };
+
 } // namespace ruse::reference

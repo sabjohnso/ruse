@@ -19,10 +19,15 @@
 
 namespace ruse {
 
+  using reference::sqr;
+  using reference::twc;
+
   using reference::apply;
   using reference::apply_to;
   using reference::apply_to_list;
   using reference::case_lambda;
+  using reference::cut;
+  using reference::cute;
 
   using reference::compose;
   using reference::curry;
@@ -89,6 +94,9 @@ namespace ruse {
   using reference::property_list_ref;
   constexpr auto plist_ref = reference::property_list_ref;
 
+  using reference::property_list_ref_;
+  constexpr auto plist_ref_ = reference::property_list_ref_;
+
   using reference::vacuous_list_sort;
   constexpr auto vlist_sort = reference::vacuous_list_sort;
 
@@ -105,9 +113,12 @@ namespace ruse {
 
   using reference::operator+;
   using reference::operator*;
+  using reference::operator==;
 
+  using reference::add1;
   using reference::Nat;
   using reference::nat;
+  using reference::sub1;
 
   using reference::Character;
   using reference::hoist;
@@ -120,6 +131,7 @@ namespace ruse {
   using reference::hoisted_last;
   using reference::hoisted_list;
   using reference::HoistedList;
+  using reference::HoistedString;
   using reference::is_character;
   using reference::is_hoisted;
   using reference::is_string;
@@ -151,6 +163,7 @@ namespace ruse {
   using reference::pure;
   using reference::Pure;
 
+  using reference::beginm;
   using reference::duplicate;
   using reference::extend;
   using reference::extract;

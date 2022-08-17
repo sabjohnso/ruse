@@ -28,13 +28,6 @@ namespace ruse::reference {
 
     template<typename T>
     friend constexpr bool
-    operator==(T, nothing_s)
-    {
-      return false;
-    }
-
-    template<typename T>
-    friend constexpr bool
     operator!=(nothing_s x, T y)
     {
       return !(x == y);

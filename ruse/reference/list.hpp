@@ -608,6 +608,15 @@ namespace ruse::reference {
     });
 
   /**
+   * @brief Return the value from the first element of the input property list
+   * matching the input tag.
+   */
+  constexpr auto property_list_ref_ =
+    curry(nat<2>, [](Empty auto tag, PropertyList auto xs) {
+      return property_list_ref(tag, xs).value;
+    });
+
+  /**
    * @brief Return the last element of the nonempty input list.
    */
   constexpr auto last =
