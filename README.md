@@ -80,6 +80,19 @@ concept Point = JSONSchema<T, point_schema>;
 ```
 
 ### Work
+ - [x] Core functionality
+    - [x] Type proxies
+    - [x] Tags
+    - [x] Lists
+       - [x] Simple lists
+       - [x] Homogeneous lists
+       - [x] Property lists
+    - [x] Hoisted lists
+    - [x] Protocols
+       - [x] Functors
+          - [x] Applicative functors
+          - [x] Monads
+       - [x] Monoids
  - [ ] Code Generation
  - [ ] Compile-time execution
     - [ ] Modules
@@ -103,11 +116,19 @@ concept Point = JSONSchema<T, point_schema>;
  - [ ] Reader
     - [x] Testing
     - [x] Implementation
+    - [x] Documentation
+    - [ ] Migration to reference
+    - [-] Generic `ask`
+      The added complexity is concidered to high for the benefit
+    - [-] Generic `asks`
+      The added complexity is concidered to high for the benefit
+    - [-] Generic `local`
+      The added complexity is concidered to high for the benefit
+ - [ ] Writer
+    - [ ] Testing
+    - [ ] Implementation
     - [ ] Documentation
     - [ ] Migration to reference
-    - [ ] Generic `ask`
-    - [ ] Generic `asks`
-    - [ ] Generic `local`
  - [ ] Reflection
     - [ ] Enumerations
        - [ ] Type name
@@ -122,6 +143,15 @@ concept Point = JSONSchema<T, point_schema>;
        - [ ] Member function names
        - [ ] Member function signatures
        - [ ] Serialization and Formatting
+ - [ ] Grammar
+    - [ ] Syntax
+       - [ ] BNF syntax
+       - [ ] Affix syntax
+       - [ ] Two Level syntax
+    - [ ] Recognizers
+    - [ ] Transducers
+    - [ ]
+
  - [x] State
     - [x] Testing
     - [x] Implementation

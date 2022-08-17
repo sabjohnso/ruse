@@ -13,6 +13,9 @@
 
 namespace ruse::experimental {
 
+  /**
+   * @bief A data structure template denoting a computation in an environment
+   */
   template<typename F>
   struct reader_s
   {
@@ -23,17 +26,44 @@ namespace ruse::experimental {
     {}
   };
 
+  /**
+   * @brief Run a computation in the specified environment
+   */
+  constexpr auto run_reader =
+    curry(nat<2>, [](auto e, auto mx) { return mx.run(e); });
+
+  /**
+   * @brief Inject a value into a computation in an environment
+   */
   constexpr auto make_reader = [](auto x) {
     return reader_s{[=](auto) { return x; }};
   };
 
+  /**
+   * @brief A concept for a reader
+   */
   template<typename M, typename E>
   concept Reader = requires(M mx, E e)
   {
-    mx.run(e);
+    mx.run_reader(e);
   };
 
-  constexpr auto run = curry(nat<2>, [](auto e, auto mx) { return mx.run(e); });
+  /**
+   * @brief Retreive the environment
+   */
+  constexpr auto ask = reader_s{identity};
+
+  /**
+   * @brief Retrieve a selection from the environment
+   */
+  constexpr auto asks = cute(fmap, ask);
+
+  /**
+   * @brief Run a computation in a local environment.
+   */
+  constexpr auto local = curry(nat<2>, [](auto f, auto mx) {
+    return reader_s{[=](auto e) { return run_reader(f(e), mx); }};
+  });
 
   template<typename F>
   constexpr auto
@@ -47,16 +77,9 @@ namespace ruse::experimental {
   get_flatmap(type_s<reader_s<F>>)
   {
     return [](auto f, auto mx) {
-      return reader_s{[=](auto e) { return run(e, f(run(e, mx))); }};
+      return reader_s{
+        [=](auto e) { return run_reader(e, f(run_reader(e, mx))); }};
     };
   }
-
-  constexpr auto ask = reader_s{identity};
-
-  constexpr auto asks = cute(fmap, ask);
-
-  constexpr auto local = curry(nat<2>, [](auto f, auto mx) {
-    return reader_s{[=](auto e) { return run(f(e), mx); }};
-  });
 
 } // namespace ruse::experimental
