@@ -7,9 +7,9 @@
 //
 // ... ruse header files
 //
-#include <ruse/experimental/reader.hpp>
+#include <ruse/ruse.hpp>
 
-namespace ruse::experimental::testing {
+namespace ruse::testing {
 
   TEST(reader, make_reader)
   {
@@ -72,4 +72,4 @@ namespace ruse::experimental::testing {
     // clang-format on
   }
 
-} // namespace ruse::experimental::testing
+} // namespace ruse::testing

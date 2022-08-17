@@ -13,6 +13,7 @@
 #include <ruse/reference/parser.hpp>
 #include <ruse/reference/protocol.hpp>
 #include <ruse/reference/pure.hpp>
+#include <ruse/reference/reader.hpp>
 #include <ruse/reference/state.hpp>
 #include <ruse/reference/string.hpp>
 #include <ruse/reference/tag.hpp>
@@ -196,6 +197,13 @@ namespace ruse {
   using reference::word;
   // using reference::many;
   // using reference::many1;
+
+  // reader
+  using reference::ask;
+  using reference::asks;
+  using reference::local;
+  using reference::make_reader;
+  using reference::run_reader;
 
   // state
   using reference::eval_state;

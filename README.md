@@ -117,7 +117,7 @@ concept Point = JSONSchema<T, point_schema>;
     - [x] Testing
     - [x] Implementation
     - [x] Documentation
-    - [ ] Migration to reference
+    - [x] Migration to reference
     - [-] Generic `ask`
       The added complexity is concidered to high for the benefit
     - [-] Generic `asks`

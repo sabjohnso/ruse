@@ -11,7 +11,7 @@
 #include <concepts>
 #include <utility>
 
-namespace ruse::experimental {
+namespace ruse::reference {
 
   /**
    * @bief A data structure template denoting a computation in an environment
@@ -82,4 +82,4 @@ namespace ruse::experimental {
     };
   }
 
-} // namespace ruse::experimental
+} // namespace ruse::reference
