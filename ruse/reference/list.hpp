@@ -110,6 +110,36 @@ namespace ruse::reference {
   concept ListOfPositiveLength =
     (N > 0) && NonemptyList<T>&& ListOfLength<T, N>;
 
+  template<typename T, integer N>
+  concept ListOfLengthAtLeast = List<T> &&(length_type(type<T>) >= N);
+
+  template<typename T, integer N>
+  concept ListOfLengthGreaterThan = List<T> &&(length_type(type<T>) > N);
+
+  template<typename T, integer N>
+  concept ListOfLengthLessThan = List<T> &&(length_type(type<T>) >= N);
+
+  template<typename T, integer N>
+  concept ListOfLengthNoMoreThan = List<T> &&(length_type(type<T>) >= N);
+
+  constexpr auto list_type_ref =
+    []<integer N, ListOfLengthAtLeast<N> T>(Nat<N>, type_s<T>) {
+      constexpr auto recur = []<typename Head, typename Tail, integer M>(
+                               auto recur, type_s<pair<Head, Tail>>, Nat<M>) {
+        if constexpr (M == N) {
+          return type<Head>;
+        } else {
+          return recur(recur, type<Tail>, nat<M + 1>);
+        }
+      };
+
+      return recur(recur, type<T>, nat<0>);
+    };
+
+  template<typename T, typename E, integer N>
+  concept ListWithElement = ListOfLengthAtLeast<T, N> && type<E>
+  == list_type_ref(nat<N>, type<T>);
+
   /**
    * @brief A concept for unitary lists
    */

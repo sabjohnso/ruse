@@ -110,6 +110,7 @@ concept Point = JSONSchema<T, point_schema>;
  - [ ] Racket interoperability
  - [ ] Records
     - [ ] Testing
+    - [ ] Concepts
     - [ ] Implementation
     - [ ] Documentation
     - [ ] Migration to reference
