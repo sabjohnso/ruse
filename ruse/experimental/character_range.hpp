@@ -40,7 +40,7 @@ namespace ruse::experimental {
   {
     template<Character auto Value>
     constexpr bool
-    operator()(type_s<character_value<Value>>) const
+    operator()(Type<character_value<Value>>) const
     {
       return true;
     }
@@ -86,7 +86,7 @@ namespace ruse::experimental {
 
     template<Character auto Lower, Character auto Upper>
     constexpr bool
-    operator()(type_s<character_range<Lower, Upper>>) const
+    operator()(Type<character_range<Lower, Upper>>) const
     {
       return true;
     }

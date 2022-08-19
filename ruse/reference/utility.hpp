@@ -61,7 +61,7 @@ namespace ruse::reference {
   template<typename T>
   concept Vacuous = Empty<T> && DefaultConstructible<T>;
 
-  constexpr auto is_vacuous_type = []<typename T>(type_s<T>) {
+  constexpr auto is_vacuous_type = []<typename T>(Type<T>) {
     return Vacuous<T>;
   };
 

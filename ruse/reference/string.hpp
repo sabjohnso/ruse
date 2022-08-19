@@ -16,8 +16,8 @@ namespace ruse::reference {
     same_as<T, char32_t> || same_as<T, char8_t>;
 
   constexpr auto is_character_type = []<typename T>(T) {
-    if constexpr (Type<T>) {
-      return []<typename U>(type_s<U>) { return Character<U>; }(T{});
+    if constexpr (TypeProxy<T>) {
+      return []<typename U>(Type<U>) { return Character<U>; }(T{});
     } else {
       return false;
     }

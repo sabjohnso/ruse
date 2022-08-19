@@ -57,7 +57,7 @@ namespace ruse::reference {
   concept Tagged = ValueWrapper<T> && HasEmptyNameType<T>;
 
   constexpr auto is_tagged_type = []<typename T>(T) {
-    if constexpr (Type<T>) {
+    if constexpr (TypeProxy<T>) {
       return Tagged<typename T::type>;
     } else {
       return false;
@@ -98,13 +98,13 @@ namespace ruse::reference {
     }
   };
 
-  constexpr auto name_type = []<Type T>(T) {
+  constexpr auto name_type = []<TypeProxy T>(T) {
     return type<typename T::type::name_type>;
   };
 
   template<ValueWrapper T>
   constexpr auto
-  get_pure(type_s<T>)
+  get_pure(Type<T>)
   {
     return
       []<typename U>(U x) { return template_of_type(type<T>)(type<U>)(x); };
@@ -112,7 +112,7 @@ namespace ruse::reference {
 
   template<ValueWrapper T>
   constexpr auto
-  get_fmap(type_s<T>)
+  get_fmap(Type<T>)
   {
     return [](auto f, ValueWrapper auto x) {
       constexpr auto pure = get_pure(type<T>);
@@ -122,21 +122,21 @@ namespace ruse::reference {
 
   template<ValueWrapper T>
   constexpr auto
-  get_flatten(type_s<T>)
+  get_flatten(Type<T>)
   {
     return [](ValueWrapper auto x) -> ValueWrapper auto { return x.value; };
   }
 
   template<ValueWrapper T>
   constexpr auto
-  get_extract(type_s<T>)
+  get_extract(Type<T>)
   {
     return [](ValueWrapper auto x) { return x.value; };
   }
 
   template<ValueWrapper T>
   constexpr auto
-  get_extend(type_s<T>)
+  get_extend(Type<T>)
   {
     return [](auto f, ValueWrapper auto wx) -> ValueWrapper auto
     {

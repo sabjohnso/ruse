@@ -19,33 +19,46 @@ namespace ruse::reference {
   template<typename F>
   struct reader_s
   {
-    F run;
-
     constexpr reader_s(F input)
       : run(input)
     {}
+    F run;
+  };
+
+  /**
+   * @brief A concept for a reader
+   */
+  template<typename T>
+  concept Reader = TemplateSpec<T, Template<reader_s>>;
+
+  /**
+   * @brief Return `true` if the input is a reader. Otherwise, return `false`.
+   */
+  constexpr auto is_reader = []<typename T>(T) { return Reader<T>; };
+
+  /**
+   * @brief A concept for readers accepting the environment
+   */
+  template<typename T, typename E>
+  concept ReaderOf = Reader<T> and requires(T mx, E e)
+  {
+    mx.run(e);
   };
 
   /**
    * @brief Run a computation in the specified environment
    */
   constexpr auto run_reader =
-    curry(nat<2>, [](auto e, auto mx) { return mx.run(e); });
+    curry(nat<2>, []<typename E>(E e, ReaderOf<E> auto mx) {
+      return mx.run(e);
+    });
 
   /**
    * @brief Inject a value into a computation in an environment
    */
-  constexpr auto make_reader = [](auto x) {
-    return reader_s{[=](auto) { return x; }};
-  };
-
-  /**
-   * @brief A concept for a reader
-   */
-  template<typename M, typename E>
-  concept Reader = requires(M mx, E e)
+  constexpr auto make_reader = [](auto x) -> Reader auto
   {
-    mx.run_reader(e);
+    return reader_s{[=](auto) { return x; }};
   };
 
   /**
@@ -67,14 +80,14 @@ namespace ruse::reference {
 
   template<typename F>
   constexpr auto
-  get_pure(type_s<reader_s<F>>)
+  get_pure(Type<reader_s<F>>)
   {
     return []<typename T>(T x) { return reader_s{[=](auto) { return x; }}; };
   }
 
   template<typename F>
   constexpr auto
-  get_flatmap(type_s<reader_s<F>>)
+  get_flatmap(Type<reader_s<F>>)
   {
     return [](auto f, auto mx) {
       return reader_s{

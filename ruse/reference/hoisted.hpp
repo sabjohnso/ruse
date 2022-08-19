@@ -39,11 +39,11 @@ namespace ruse::reference {
    * @brief Return `true` if the input is a type proxy for a hoisted value type.
    * Otherwise, return `false`.
    */
-  struct is_hoisted_type_s
+  struct is_hoisted_Type
   {
     template<auto Value>
     constexpr bool
-    operator()(type_s<hoisted<Value>>) const
+    operator()(Type<hoisted<Value>>) const
     {
       return true;
     }
@@ -93,11 +93,11 @@ namespace ruse::reference {
    * @brief Return true if the input is a type proxy for a hoisted list type.
    * Otherwise, return `false`.
    */
-  struct is_hoisted_list_type_s
+  struct is_hoisted_list_Type
   {
     template<auto... Values>
     constexpr bool
-    operator()(type_s<hoisted_list<Values...>>) const
+    operator()(Type<hoisted_list<Values...>>) const
     {
       return true;
     }
@@ -225,7 +225,7 @@ namespace ruse::reference {
 
   template<HoistedList T>
   constexpr auto
-  get_fmap(type_s<T>)
+  get_fmap(Type<T>)
   {
     return []<typename F, HoistedList U>(F, U) {
       return hoist([] { return fmap(F{}, U::values); });
@@ -234,14 +234,14 @@ namespace ruse::reference {
 
   template<HoistedList T>
   constexpr auto
-  get_pure(type_s<T>)
+  get_pure(Type<T>)
   {
     return []<Hoisted U>(U) { return hoist([] { return list(U::value); }); };
   }
 
   template<HoistedList T>
   constexpr auto
-  get_flatmap(type_s<T>)
+  get_flatmap(Type<T>)
   {
     return []<typename F, HoistedList U>(F, U) {
       return hoist([] { return flatmap(F{}, U::values); });

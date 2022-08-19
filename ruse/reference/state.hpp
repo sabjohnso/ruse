@@ -36,13 +36,13 @@ namespace ruse::reference {
    * @brief Return `true` if the input is a type proxy for a stateful type.
    * Otherwise, return `false`.
    */
-  struct is_stateful_type_s
+  struct is_stateful_Type
   {
     constexpr bool operator()(auto) const { return false; }
 
     template<typename F>
     constexpr bool
-    operator()(type_s<stateful<F>>) const
+    operator()(Type<stateful<F>>) const
     {
       return true;
     }
@@ -129,14 +129,14 @@ namespace ruse::reference {
 
   template<typename F>
   constexpr auto
-  get_pure(type_s<stateful<F>>)
+  get_pure(Type<stateful<F>>)
   {
     return make_stateful;
   }
 
   template<typename F>
   constexpr auto
-  get_flatmap(type_s<stateful<F>>)
+  get_flatmap(Type<stateful<F>>)
   {
     return [](auto f, auto mx) {
       return stateful{[=](auto s) {

@@ -19,7 +19,7 @@ namespace ruse::reference {
    * Otherwise, return `false`.
    */
   constexpr auto is_list_type = []<typename T>(T) {
-    constexpr auto aux = []<typename U>(auto recur, type_s<U>) {
+    constexpr auto aux = []<typename U>(auto recur, Type<U>) {
       if constexpr (Pair<U>) {
         return recur(recur, type<typename U::second_type>);
       } else if constexpr (Nothing<U>) {
@@ -29,7 +29,7 @@ namespace ruse::reference {
       }
     };
 
-    if constexpr (Type<T>) {
+    if constexpr (TypeProxy<T>) {
       return u(aux, T{});
     } else {
       return false;
@@ -77,7 +77,7 @@ namespace ruse::reference {
    * @brief Return `true` if the input type proxy is a proxy for an empty list
    * type. Otherwise, return `false`.
    */
-  constexpr auto is_empty_list_type = []<typename T>(type_s<T>) {
+  constexpr auto is_empty_list_type = []<typename T>(Type<T>) {
     return EmptyList<T>;
   };
 
@@ -85,8 +85,8 @@ namespace ruse::reference {
    * @brief Return the number of elements in instances of the list type
    * referenced by the input type proxy.
    */
-  constexpr auto length_type = []<List T>(type_s<T>) {
-    constexpr auto aux = []<typename U>(auto recur, auto accum, type_s<U>) {
+  constexpr auto length_type = []<List T>(Type<T>) {
+    constexpr auto aux = []<typename U>(auto recur, auto accum, Type<U>) {
       if constexpr (Pair<U>) {
         return recur(recur, accum + 1, type<typename U::second_type>);
       } else {
@@ -123,9 +123,9 @@ namespace ruse::reference {
   concept ListOfLengthNoMoreThan = List<T> &&(length_type(type<T>) >= N);
 
   constexpr auto list_type_ref =
-    []<integer N, ListOfLengthAtLeast<N> T>(Nat<N>, type_s<T>) {
+    []<integer N, ListOfLengthAtLeast<N> T>(Nat<N>, Type<T>) {
       constexpr auto recur = []<typename Head, typename Tail, integer M>(
-                               auto recur, type_s<pair<Head, Tail>>, Nat<M>) {
+                               auto recur, Type<pair<Head, Tail>>, Nat<M>) {
         if constexpr (M == N) {
           return type<Head>;
         } else {
@@ -167,14 +167,14 @@ namespace ruse::reference {
   /**
    * @brief Return a type proxy for the head of the input type proxy.
    */
-  constexpr auto head_type = []<NonemptyList T>(type_s<T>) {
+  constexpr auto head_type = []<NonemptyList T>(Type<T>) {
     return type<typename T::first_type>;
   };
 
   /**
    * @brief Return a type proxy for the tail of the input type proxy.
    */
-  constexpr auto tail_type = []<List T>(type_s<T>) {
+  constexpr auto tail_type = []<List T>(Type<T>) {
     if constexpr (Pair<T>) {
       return type<typename T::second_type>;
     } else {
@@ -186,8 +186,8 @@ namespace ruse::reference {
    * @brief Return `true` if every member of the input list type proxy is a
    * vacuous type. Otherwise, return `false`.
    */
-  constexpr auto is_vacuous_list_type = []<List T>(type_s<T>) {
-    constexpr auto recur = []<List U>(auto recur, type_s<U>) {
+  constexpr auto is_vacuous_list_type = []<List T>(Type<T>) {
+    constexpr auto recur = []<List U>(auto recur, Type<U>) {
       if constexpr (EmptyList<U>) {
         return true;
       } else if (is_vacuous_type(head_type(type<U>))) {
@@ -216,7 +216,7 @@ namespace ruse::reference {
    * Otherwise, return `false`.
    */
   constexpr auto is_homogeneous_list_type = []<typename T>(T) {
-    constexpr auto aux = []<NonemptyList U>(auto recur, type_s<U>) {
+    constexpr auto aux = []<NonemptyList U>(auto recur, Type<U>) {
       if constexpr (UnitaryList<U>) {
         return true;
       } else if constexpr (
@@ -226,7 +226,7 @@ namespace ruse::reference {
         return false;
       }
     };
-    if constexpr (Type<T> && NonemptyList<typename T::type>) {
+    if constexpr (TypeProxy<T> && NonemptyList<typename T::type>) {
       return u(aux, T{});
     } else {
       return false;
@@ -253,7 +253,7 @@ namespace ruse::reference {
    * return `false`.
    */
   constexpr auto is_association_list_type = []<typename T>(T) {
-    constexpr auto aux = []<List U>(auto recur, type_s<U>) {
+    constexpr auto aux = []<List U>(auto recur, Type<U>) {
       if constexpr (Pair<U>) {
         if constexpr (Pair<typename U::first_type>) {
           return recur(recur, tail_type(type<U>));
@@ -267,7 +267,7 @@ namespace ruse::reference {
       }
     };
 
-    if constexpr (Type<T> and List<typename T::type>) {
+    if constexpr (TypeProxy<T> and List<typename T::type>) {
       return u(aux, T{});
     } else {
       return false;
@@ -307,7 +307,7 @@ namespace ruse::reference {
    * Otherwise, return `false`.
    */
   constexpr auto is_property_list_type = []<typename T>(T) {
-    constexpr auto aux = []<List U>(auto recur, type_s<U>) {
+    constexpr auto aux = []<List U>(auto recur, Type<U>) {
       if constexpr (NonemptyList<U>) {
         if constexpr (is_tagged_type(head_type(type<U>))) {
           return recur(recur, tail_type(type<U>));
@@ -319,7 +319,7 @@ namespace ruse::reference {
       }
     };
 
-    if constexpr (Type<T>) {
+    if constexpr (TypeProxy<T>) {
       if constexpr (List<typename T::type>) {
         return u(aux, T{});
       } else {
@@ -753,14 +753,14 @@ namespace ruse::reference {
 
   template<List T>
   constexpr auto
-  get_pure(type_s<T>)
+  get_pure(Type<T>)
   {
     return list;
   }
 
   template<List T>
   constexpr auto
-  get_flatmap(type_s<T>)
+  get_flatmap(Type<T>)
   {
     return [](auto f, List auto xs) -> List auto
     {
@@ -778,14 +778,14 @@ namespace ruse::reference {
 
   template<NonemptyList T>
   constexpr auto
-  get_extract(type_s<T>)
+  get_extract(Type<T>)
   {
     return head;
   }
 
   template<NonemptyList T>
   constexpr auto
-  get_extend(type_s<T>)
+  get_extend(Type<T>)
   {
     return [](auto f, NonemptyList auto xs) {
       constexpr auto aux = []<List U>(
@@ -802,7 +802,7 @@ namespace ruse::reference {
 
   template<NonemptyList T>
   constexpr auto
-  get_zapply(type_s<T>)
+  get_zapply(Type<T>)
   {
     return []<NonemptyList F>(F wf, ListLike<F> auto wx) {
       return [=]<auto... Indices>(index_sequence<Indices...>)

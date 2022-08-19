@@ -46,7 +46,7 @@ namespace ruse::reference {
    * @brief A concept for nothing
    */
   template<typename T>
-  concept Nothing = TypeProxy<type_s<T>, nothing_s>;
+  concept Nothing = TypeProxyOf<Type<T>, nothing_s>;
 
   template<typename T>
   concept Something = not Nothing<T>;

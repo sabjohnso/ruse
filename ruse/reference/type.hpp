@@ -12,7 +12,7 @@ namespace ruse::reference {
    * type specified with the template parameter
    */
   template<typename T>
-  struct type_s
+  struct Type
   {
     using type = T;
 
@@ -24,23 +24,23 @@ namespace ruse::reference {
     }
 
     friend constexpr bool
-    operator==(type_s, type_s)
+    operator==(Type, Type)
     {
       return true;
     }
 
     template<typename U>
     friend constexpr bool
-    operator==(type_s, type_s<U>)
+    operator==(Type, Type<U>)
     {
       return false;
     }
 
     template<typename U>
     friend constexpr bool
-    operator!=(type_s, type_s<U>)
+    operator!=(Type, Type<U>)
     {
-      return !(type_s{} == type_s<U>{});
+      return !(Type{} == Type<U>{});
     }
   };
 
@@ -48,18 +48,18 @@ namespace ruse::reference {
    * @brief Type proxy variable
    */
   template<typename T>
-  constexpr type_s<remove_cvref_t<T>> type{};
+  constexpr Type<remove_cvref_t<T>> type{};
 
   /**
    * @brief Return `true` if the input is a type proxy
    * for a type proxy. Otherwise, return `false`.
    */
-  struct is_type_type_s
+  struct is_type_Type
   {
 
     template<typename T>
     constexpr bool
-    operator()(type_s<type_s<T>>) const
+    operator()(Type<Type<T>>) const
     {
       return true;
     }
@@ -72,35 +72,35 @@ namespace ruse::reference {
    * @brief A concept for type proxies
    */
   template<typename T>
-  concept Type = is_type_type(type<T>);
+  concept TypeProxy = is_type_type(type<T>);
 
   /**
    * @brief Return `true` if the input is a type proxy. Otherwise, return
    * `false`.
    */
-  constexpr auto is_type = []<typename T>(T) { return Type<T>; };
+  constexpr auto is_type = []<typename T>(T) { return TypeProxy<T>; };
 
   /**
    * @brief A concept for particular type proxies.
    */
   template<typename T, typename U>
-  concept TypeProxy = is_same_v<remove_cvref_t<T>, type_s<remove_cvref_t<U>>>;
+  concept TypeProxyOf = is_same_v<remove_cvref_t<T>, Type<remove_cvref_t<U>>>;
 
   constexpr auto type_of = []<typename T>(T) { return type<T>; };
 
-  template<Type T>
+  template<TypeProxy T>
   constexpr auto
-  get_pure(type_s<T>)
+  get_pure(Type<T>)
   {
     return type_of;
   }
 
-  template<Type T>
+  template<TypeProxy T>
   constexpr auto
-  get_flatmap(type_s<T>)
+  get_flatmap(Type<T>)
   {
     return
-      []<typename F, typename U>(F, type_s<U>) { return result_of_t<F(U)>{}; };
+      []<typename F, typename U>(F, Type<U>) { return result_of_t<F(U)>{}; };
   }
 
   template<typename T>

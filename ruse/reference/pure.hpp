@@ -28,11 +28,11 @@ namespace ruse::reference {
     }
   };
 
-  struct is_pure_type_s
+  struct is_pure_Type
   {
     template<typename T>
     constexpr auto
-    operator()(type_s<pure_s<T>>) const
+    operator()(Type<pure_s<T>>) const
     {
       return true;
     }

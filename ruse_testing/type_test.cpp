@@ -16,20 +16,20 @@
 
 namespace ruse::testing {
 
-  TEST(Type, type_s) { STATIC_EXPECT_TRUE(Type<type_s<int>>); }
+  TEST(Type, Type) { STATIC_EXPECT_TRUE(TypeProxy<Type<int>>); }
 
-  TEST(Type, int) { STATIC_EXPECT_FALSE(Type<int>); }
+  TEST(Type, int) { STATIC_EXPECT_FALSE(TypeProxy<int>); }
 
-  TEST(TypeProxy, type) { STATIC_EXPECT_TRUE(TypeProxy<type_s<int>, int>); }
+  TEST(TypeProxyOf, type) { STATIC_EXPECT_TRUE(TypeProxyOf<Type<int>, int>); }
 
-  TEST(TypeProxy, wrong_type)
+  TEST(TypeProxyOf, wrong_type)
   {
-    STATIC_EXPECT_FALSE(TypeProxy<type_s<double>, int>);
+    STATIC_EXPECT_FALSE(TypeProxyOf<Type<double>, int>);
   }
 
-  TEST(TypeProxy, something_else)
+  TEST(TypeProxyOf, something_else)
   {
-    STATIC_EXPECT_FALSE(TypeProxy<double, int>);
+    STATIC_EXPECT_FALSE(TypeProxyOf<double, int>);
   }
 
   TEST(fmap, type)

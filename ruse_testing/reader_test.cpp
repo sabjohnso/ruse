@@ -11,6 +11,10 @@
 
 namespace ruse::testing {
 
+  TEST(reader, Reader) { STATIC_EXPECT_TRUE(Reader<decltype(ask)>); }
+
+  TEST(reader, ReaderOf) { STATIC_EXPECT_TRUE(ReaderOf<decltype(ask), int>); }
+
   TEST(reader, make_reader)
   {
     STATIC_EXPECT_EQ(3, run_reader('e', make_reader(3)));

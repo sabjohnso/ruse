@@ -17,6 +17,7 @@
 #include <ruse/reference/state.hpp>
 #include <ruse/reference/string.hpp>
 #include <ruse/reference/tag.hpp>
+#include <ruse/reference/template.hpp>
 #include <ruse/reference/type.hpp>
 
 namespace ruse {
@@ -39,8 +40,8 @@ namespace ruse {
   using reference::type;
   using reference::Type;
   using reference::type_of;
-  using reference::type_s;
   using reference::TypeProxy;
+  using reference::TypeProxyOf;
 
   using reference::is_nothing;
   using reference::nothing;
@@ -201,8 +202,11 @@ namespace ruse {
   // reader
   using reference::ask;
   using reference::asks;
+  using reference::is_reader;
   using reference::local;
   using reference::make_reader;
+  using reference::Reader;
+  using reference::ReaderOf;
   using reference::run_reader;
 
   // state
@@ -214,5 +218,10 @@ namespace ruse {
   using reference::put_state;
   using reference::run_state;
   using reference::select_state;
+
+  // template
+  using reference::Template;
+  using reference::TemplateProxy;
+  using reference::TemplateSpec;
 
 } // end of namespace ruse
