@@ -5,10 +5,14 @@
 #include <ruse_testing/test_macros.hpp>
 
 //
+// ... external header files
+//
+#include <pfr.hpp>
+
+//
 // ... ruse header files
 //
 #include <ruse/ruse.hpp>
-
 #include <ruse/show.hpp>
 
 #include <any>
@@ -112,5 +116,7 @@ namespace ruse::testing {
       list(type<double>, type<double>, type<double>, type<bool>),
       aggregate_member_types<point>);
   }
+
+  TEST(pfr, example) {}
 
 } // end of namespace ruse::testing

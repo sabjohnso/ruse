@@ -5,4 +5,7 @@ if(NOT EXISTS ${PROJECT_SOURCE_DIR}/cmake_utilities/FindCMakeUtilities.cmake)
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 endif()
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_utilities)
-find_package(CMakeUtilities)
+find_package(CMakeUtilities REQUIRED)
+
+find_package(pfr REQUIRED)
+set(pfr_EXCLUDE_FROM_ALL)

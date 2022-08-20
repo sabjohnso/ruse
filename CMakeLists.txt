@@ -23,11 +23,11 @@ if(ruse_BUILD_TESTING)
   endif()
 endif()
 
-install(EXPORT ruse_EXPORTS
-  NAMESPACE ruse::
-  FILE ruse-exports.cmake
-  DESTINATION ${ruse_INSTALL_CONFDIR})
+# install(EXPORT ruse_EXPORTS
+#   NAMESPACE ruse::
+#   FILE ruse-exports.cmake
+#   DESTINATION ${ruse_INSTALL_CONFDIR})
 
-configure_file(ruse-config.cmake.in ruse-config.cmake)
-install(FILES ${PROJECT_BINARY_DIR}/ruse-config.cmake
-  DESTINATION ${ruse_INSTALL_CONFDIR})
+# configure_file(ruse-config.cmake.in ruse-config.cmake)
+# install(FILES ${PROJECT_BINARY_DIR}/ruse-config.cmake
+#   DESTINATION ${ruse_INSTALL_CONFDIR})
