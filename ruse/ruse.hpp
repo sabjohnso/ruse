@@ -154,6 +154,7 @@ namespace ruse {
   using reference::is_hoisted_list;
   using reference::is_string;
   using reference::lower;
+  using reference::NonstringList;
   using reference::str;
   using reference::String;
   using reference::operator""_hoist;

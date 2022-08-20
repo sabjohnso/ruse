@@ -92,9 +92,29 @@ namespace ruse::reference {
 
     template<typename T>
     constexpr Tagged auto
-    operator()(T x)
+    operator()(T x) const
     {
       return tagged<T, Name>{.value = x};
+    }
+
+    friend constexpr bool
+    operator==(tag, tag)
+    {
+      return true;
+    }
+
+    template<typename U>
+    friend constexpr bool
+    operator==(tag, U)
+    {
+      return false;
+    }
+
+    template<typename U>
+    friend constexpr bool
+    operator!=(tag, U x)
+    {
+      return !(tag{} == x);
     }
   };
 

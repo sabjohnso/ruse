@@ -11,36 +11,6 @@ namespace ruse::experimental {
 
   using namespace ruse::reference;
 
-  template<HoistedString T>
-  struct record_name
-  {};
-
-  struct is_record_name_Type
-  {
-    template<HoistedString T>
-    constexpr bool
-    operator()(Type<record_name<T>>) const
-    {
-      return true;
-    }
-    constexpr bool operator()(auto) const { return false; }
-  } constexpr is_record_name_type{};
-
-  template<typename T>
-  concept RecordName = is_record_name_type(type<T>);
-
-  constexpr auto is_record_name = []<typename T>(T) { return RecordName<T>; };
-
-  template<fixed_string str>
-  constexpr auto operator""_record_name()
-  {
-    return []<auto... Indices>(index_sequence<Indices...>)
-    {
-      return record_name<hoisted_list<str.value[Indices]...>>{};
-    }
-    (make_index_sequence<str.extent - 1>());
-  };
-
   template<typename T>
   struct field_decl_list
   {
@@ -51,15 +21,36 @@ namespace ruse::experimental {
   struct field_name
   {
     template<typename U>
+    constexpr auto
+    operator()(Type<U>) const
+    {
+      return list(field_name{}, type<U>);
+    }
+
+    template<typename U>
     constexpr auto operator,(Type<U>) const
     {
       return list(field_name{}, type<U>);
     }
 
-    template<HoistedString U>
-    constexpr auto operator,(field_name<U>)
+    friend constexpr bool
+    operator==(field_name, field_name)
     {
-      return list(field_name{}, field_name<U>{});
+      return true;
+    }
+
+    template<typename U>
+    friend constexpr bool
+    operator==(field_name, U)
+    {
+      return false;
+    }
+
+    template<typename U>
+    friend constexpr bool
+    operator!=(field_name, U x)
+    {
+      return !(field_name{}, x);
     }
   };
 
@@ -70,7 +61,7 @@ namespace ruse::experimental {
     {
       return field_name<hoisted_list<str.value[Indices]...>>{};
     }
-    (make_index_sequence<str.extent>());
+    (make_index_sequence<str.extent - 1>());
   };
 
   struct is_field_name_Type
@@ -124,6 +115,62 @@ namespace ruse::experimental {
    * `false`.
    */
   constexpr auto is_field_decl = []<typename T>(T) { return FieldDecl<T>; };
+
+  template<HoistedString T>
+  struct record_name
+  {
+    constexpr auto
+    operator()(FieldDecl auto... decls) const
+    {
+      return list(record_name{}, list(decls...));
+    }
+
+    friend constexpr bool
+    operator==(record_name, record_name)
+    {
+      return true;
+    }
+
+    template<typename U>
+    friend constexpr bool
+    operator==(record_name, U)
+    {
+      return false;
+    }
+
+    template<typename U>
+    friend constexpr bool
+    operator!=(record_name, U x)
+    {
+      return !(record_name{} == x);
+    }
+  };
+
+  struct is_record_name_type_s
+  {
+    template<HoistedString T>
+    constexpr bool
+    operator()(Type<record_name<T>>) const
+    {
+      return true;
+    }
+    constexpr bool operator()(auto) const { return false; }
+  } constexpr is_record_name_type{};
+
+  template<typename T>
+  concept RecordName = is_record_name_type(type<T>);
+
+  constexpr auto is_record_name = []<typename T>(T) { return RecordName<T>; };
+
+  template<fixed_string str>
+  constexpr auto operator""_record_name()
+  {
+    return []<auto... Indices>(index_sequence<Indices...>)
+    {
+      return record_name<hoisted_list<str.value[Indices]...>>{};
+    }
+    (make_index_sequence<str.extent - 1>());
+  };
 
   /**
    * @brief Return `true` if the input is a field declaration list.  Otherwise
@@ -182,5 +229,51 @@ namespace ruse::experimental {
     }
     constexpr auto operator()(auto) const { return false; }
   };
+
+  constexpr auto definition_record_name = [](RecordDefinition auto def) {
+    return list_ref(nat<0>, def);
+  };
+
+  constexpr auto definition_field_decl_list = [](RecordDefinition auto def) {
+    return list_ref(nat<1>, def);
+  };
+
+  // return the type tag for a record definition
+  constexpr auto record_definition_type_tag = [](RecordDefinition auto def) {
+    return template_swap(tmplt<tag>, definition_record_name(def));
+  };
+
+  constexpr auto field_decl_tag = []<FieldDecl T>(T decl) {
+    if constexpr (TypedFieldDecl<T>) {
+      return template_swap(tmplt<tag>, list_ref(nat<0>, decl));
+    } else {
+      return template_swap(tmplt<tag>, decl);
+    }
+  };
+
+  constexpr auto make_record =
+    [](RecordDefinition auto definition, auto... field_values) {
+      constexpr auto name = record_definition_type_tag(definition);
+      return [=]<auto... I>(index_sequence<I...>)
+      {
+        return name(list(field_decl_tag(list_ref(
+          nat<I>, definition_field_decl_list(definition)))(field_values)...));
+      }
+      (make_index_sequence<sizeof...(field_values)>());
+    };
+
+  template<typename T>
+  std::ostream&
+  operator<<(std::ostream& os, record_name<T> const&)
+  {
+    return os << "\"" << T{} << "\"_record";
+  }
+
+  template<typename T>
+  std::ostream&
+  operator<<(std::ostream& os, field_name<T> const&)
+  {
+    return os << "\"" << T{} << "\"_field";
+  }
 
 } // end of namespace ruse::experimental

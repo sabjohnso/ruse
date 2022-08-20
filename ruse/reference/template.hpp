@@ -147,4 +147,14 @@ namespace ruse::reference {
   concept TemplateSpec = is_template_proxy_type(type<TemplateProxy>) and
     (template_of_type(type<T>) == TemplateProxy{});
 
+  constexpr auto template_swap =
+    [
+    ]<template<typename...> class K1,
+      template<typename...>
+      class K2,
+      typename T>(Template<K1>, K2<T>)
+  {
+    return K1<T>{};
+  };
+
 } // end of namespace ruse::reference

@@ -14,6 +14,20 @@
 
 namespace ruse::reference {
 
+  template<typename T, typename Name>
+  std::ostream&
+  operator<<(std::ostream& os, tagged<T, Name> x)
+  {
+    return os << tag<Name>{} << "(" << x.value << ")";
+  }
+
+  template<typename T>
+  constexpr auto
+  pretty_function(T)
+  {
+    return std::string_view{__PRETTY_FUNCTION__};
+  }
+
   template<UnitaryString T>
   std::ostream&
   operator<<(std::ostream& os, T str)
@@ -23,23 +37,23 @@ namespace ruse::reference {
 
   template<String T>
   std::ostream&
-  operator<<(std::ostream& os, T str)
+  operator<<(std::ostream& os, const T& str)
   {
     return os << car(str) << cdr(str);
   }
 
-  template<HoistedString T>
+  template<char... cs>
   std::ostream&
-  operator<<(std::ostream& os, T)
+  operator<<(std::ostream& os, const hoisted_list<cs...>& x)
   {
-    return os << T::values;
+    return os << x.values;
   }
 
   template<HoistedString T>
   std::ostream&
   operator<<(std::ostream& os, tag<T>)
   {
-    return os << '"' << T::values << "\"_tag";
+    return os << "\"" << T::values << "\"_tag";
   }
 
   template<Vacuous T>
@@ -105,19 +119,19 @@ namespace ruse::reference {
     return os << "hoisted<" << Value << ">{}";
   }
 
-  template<auto... Values>
+  template<NonstringHoistedList T>
   std::ostream&
-  operator<<(std::ostream& os, hoisted_list<Values...>)
+  operator<<(std::ostream& os, T)
   {
-    constexpr auto values = list(Values...);
-    auto aux = [&]<List T>(auto recur, T xs) -> void {
-      if constexpr (NonemptyList<T>) {
+    constexpr auto values = T::values;
+    auto aux = [&]<List U>(auto recur, T xs) -> void {
+      if constexpr (NonemptyList<U>) {
         os << "," << head(xs);
         return recur(recur, tail(xs));
       }
     };
 
-    if constexpr (0 == sizeof...(Values)) {
+    if constexpr (0 == length(T::values)) {
       return os << "hoisted_list<>{}";
     } else {
       os << "hoisted_list<" << head(values);
@@ -132,10 +146,11 @@ namespace ruse::reference {
     return os << "nothing";
   }
 
-  template<List T>
+  template<NonstringList T>
   std::ostream&
   operator<<(std::ostream& os, T xs)
   {
+    static_assert(!String<T>);
     constexpr auto aux =
       []<List U>(auto recur, std::ostream& os, U xs) -> std::ostream& {
       if constexpr (Pair<U>) {
