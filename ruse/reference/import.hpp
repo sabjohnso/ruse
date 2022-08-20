@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <functional>
 #include <stdexcept>
+#include <string_view>
 #include <type_traits>
 
 namespace ruse::reference {
@@ -16,12 +17,16 @@ namespace ruse::reference {
 
   // from type_traits
   using std::index_sequence;
+  using std::is_aggregate_v;
   using std::is_empty_v;
   using std::is_invocable_v;
   using std::is_same_v;
   using std::make_index_sequence;
   using std::remove_cvref_t;
   using std::result_of_t;
+
+  // from string_view
+  using std::string_view;
 
   // from concepts
   using std::convertible_to;

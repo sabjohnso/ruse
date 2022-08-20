@@ -21,25 +21,15 @@ namespace ruse::reference {
     return os << tag<Name>{} << "(" << x.value << ")";
   }
 
-  template<typename T>
-  constexpr auto
-  pretty_function(T)
-  {
-    return std::string_view{__PRETTY_FUNCTION__};
-  }
-
-  template<UnitaryString T>
-  std::ostream&
-  operator<<(std::ostream& os, T str)
-  {
-    return os << car(str);
-  }
-
   template<String T>
   std::ostream&
   operator<<(std::ostream& os, const T& str)
   {
-    return os << car(str) << cdr(str);
+    if constexpr (length_type(type<T>) == 1) {
+      return os << car(str);
+    } else {
+      return os << car(str) << cdr(str);
+    }
   }
 
   template<char... cs>

@@ -14,6 +14,7 @@
 #include <ruse/reference/protocol.hpp>
 #include <ruse/reference/pure.hpp>
 #include <ruse/reference/reader.hpp>
+#include <ruse/reference/reflection.hpp>
 #include <ruse/reference/state.hpp>
 #include <ruse/reference/string.hpp>
 #include <ruse/reference/tag.hpp>
@@ -224,5 +225,12 @@ namespace ruse {
   using reference::Template;
   using reference::TemplateProxy;
   using reference::TemplateSpec;
+
+  // reflection
+  using reference::Aggregate;
+  using reference::aggregate_member_count;
+  using reference::aggregate_member_types;
+  using reference::AggregateInitializable;
+  using reference::type_name;
 
 } // end of namespace ruse
