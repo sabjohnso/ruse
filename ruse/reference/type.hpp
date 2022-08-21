@@ -105,4 +105,5 @@ namespace ruse::reference {
 
   template<typename T>
   constexpr auto is = []<typename U>(U) { return type<T> == type<U>; };
+
 } // end of namespace ruse::reference

@@ -145,6 +145,17 @@ namespace ruse::reference {
    */
   constexpr auto let = [](auto x, auto f) { return f(x); };
 
+  /**
+   * @brief Return the first of two inputs.
+   */
+  constexpr auto constantly = curry(nat<2>, [](auto x, auto) { return x; });
+
+  /**
+   * @brief Return the first of three inputs.
+   */
+  constexpr auto ternary_constantly =
+    curry(nat<3>, [](auto x, auto, auto) { return x; });
+
   template<typename F, typename... Ts>
   concept Invocable = is_invocable_v<F, Ts...>;
 

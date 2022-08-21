@@ -15,11 +15,13 @@
 #include <ruse/reference/pure.hpp>
 #include <ruse/reference/reader.hpp>
 #include <ruse/reference/reflection.hpp>
+#include <ruse/reference/singleton.hpp>
 #include <ruse/reference/state.hpp>
 #include <ruse/reference/string.hpp>
 #include <ruse/reference/tag.hpp>
 #include <ruse/reference/template.hpp>
 #include <ruse/reference/type.hpp>
+#include <ruse/reference/vector.hpp>
 
 namespace ruse {
 
@@ -34,6 +36,7 @@ namespace ruse {
   using reference::cute;
 
   using reference::compose;
+  using reference::constantly;
   using reference::curry;
   using reference::identity;
 
@@ -232,5 +235,35 @@ namespace ruse {
   using reference::aggregate_member_types;
   using reference::AggregateInitializable;
   using reference::type_name;
+
+  // vectors
+  using reference::empty_vector;
+  using reference::EmptyVector;
+  using reference::HomogeneousVector;
+  using reference::is_empty_vector;
+  using reference::is_empty_vector_type;
+  using reference::is_homogeneous_vector;
+  using reference::is_homogeneous_vector_type;
+  using reference::NonemptyVector;
+  using reference::pop_back;
+  using reference::push_back;
+  using reference::UnitaryVector;
+  using reference::vector;
+  using reference::Vector;
+  using reference::vector_length;
+  using reference::vector_ref;
+  using reference::vector_type_length;
+  using reference::VectorWithLength;
+
+  using reference::homogeneous_vector_ref;
+  using reference::HomogeneousVector;
+  using reference::is_homogeneous_vector;
+  using reference::is_homogeneous_vector_type;
+  constexpr auto is_hvector_type = is_homogeneous_vector_type;
+  constexpr auto is_hvector = is_homogeneous_vector;
+  constexpr auto hvector_ref = homogeneous_vector_ref;
+
+  // singleton
+  using reference::singleton;
 
 } // end of namespace ruse

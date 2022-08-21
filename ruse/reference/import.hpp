@@ -36,6 +36,7 @@ namespace ruse::reference {
   using std::logic_error;
 
   // from functional
+  using std::greater;
   using std::invoke;
 
 } // end of namespace ruse::reference
