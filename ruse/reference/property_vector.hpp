@@ -54,7 +54,7 @@ namespace ruse::reference {
     curry(nat<2>, []<Tag K, PropertyVector T>(K, T) {
       constexpr auto key_name_type = flatmap(name_type, type<K>);
       return u(
-        []<PropertyVector U>(auto recur, Type<U>) {
+        [=]<PropertyVector U>(auto recur, Type<U>) {
           if constexpr (NonemptyVector<U>) {
             if constexpr (
               key_name_type ==

@@ -145,7 +145,7 @@ namespace ruse::reference {
   constexpr auto push_back = []<Vector T>(T xs, auto x) -> Vector auto
   {
     if constexpr (EmptyVector<T>) {
-      return vector_head{.head = x};
+      return vector_head<decltype(x)>{.head = x};
     } else {
       return cons(xs, x);
     }
