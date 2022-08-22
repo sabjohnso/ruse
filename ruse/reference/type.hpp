@@ -127,4 +127,7 @@ namespace ruse::reference {
   template<typename T>
   constexpr auto is = []<typename U>(U) { return type<T> == type<U>; };
 
+  template<TypeProxy auto ty>
+  using type_from = typename decltype(ty)::type;
+
 } // end of namespace ruse::reference

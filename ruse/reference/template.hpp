@@ -52,6 +52,9 @@ namespace ruse::reference {
   template<template<typename...> class K, typename... Ts>
   constexpr Template<K, Ts...> tmplt{};
 
+  template<template<typename...> class K, typename... Ts>
+  constexpr Template<K, Ts...> template_{};
+
   /**
    * @brief Return a proxy to the template of the inputs class
    */

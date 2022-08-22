@@ -35,6 +35,10 @@ to in this respect. The following is a proxy for the type `int`:
 ```c++
 type<int>;
 ```
+Type proxies can be used to instantiate a type:
+```c++
+type<std::array<int, 2>>(1, 2);
+```
 
 The type of type proxies are specialization of the template `Type`:
 
@@ -48,8 +52,61 @@ attributes from its template parameter;
 ```c++
 type<const double&> == type<double>; // => true
 ```
+Further, the template `Type` cannot be specialized with reference,
+const or volatile qualified types.
+
+Type proxies are monads. The unit constructor for the type proxy monad
+is the function `type_of`:
+
+```c++
+type_of(3) == type<int>; // true
+```
+In a way it is a canonical example of a monad
+be the value place in the `Type` context really cannot be retrieved
+from the monad because it does not exist.  However, we are still able
+to operate on it.  For example,
+
+```C++
+fmap([](auto x){ return std::to_string(x); }, type_of(int)); // => type<std::string>
+```
+
+This is very useful when chaining together functions that convert
+values to type proxies:
+
+```c++
+constexpr auto value_type_of = []<class T>([[maybe_unused]] const T& x){
+  return type<typename T::value_type>;,
+};
+
+flatmap(value_type_of, type_of(std::vector{1, 2, 3})); // => type<int>
+```
+
+The `type_from` using template is used to raise type proxies back up
+to types.
+
+```c++
+std::same_as<int, type_from<type<int>>>; // => true
+```
+
 
 ### Template proxies
+
+In addition to types, sometimes it is useful to use proxies for
+templates. A template proxy can be constructed using the `template_of` function
+
+```c++
+template_of(std::vector{1, 2, 3}) == template_<std::vector>; // => true
+```
+
+Whereas type proxies could be used to instantiate instances of the
+type, template proxies can be used to instantiate specializations of
+the template (proxies to them anyway):
+
+```c++
+template<std::vector>(type<int>); // type<std::vector<int>
+```
+
+
 
 ### Value wrappers
 Value wrappers are simple wrappers around values that propvide

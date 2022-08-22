@@ -45,6 +45,7 @@ namespace ruse {
   using reference::is_type;
   using reference::type;
   using reference::Type;
+  using reference::type_from;
   using reference::type_of;
   using reference::TypeProxy;
   using reference::TypeProxyOf;

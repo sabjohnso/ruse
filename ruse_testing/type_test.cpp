@@ -80,4 +80,9 @@ namespace ruse::testing {
     STATIC_EXPECT_EQ(type<const double&>, type<double>);
   }
 
+  TEST(type, type_from)
+  {
+    STATIC_EXPECT_TRUE(std::same_as<int, type_from<type<int>>>);
+  }
+
 } // end of namespace ruse::testing
