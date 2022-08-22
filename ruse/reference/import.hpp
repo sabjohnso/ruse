@@ -18,9 +18,12 @@ namespace ruse::reference {
   // from type_traits
   using std::index_sequence;
   using std::is_aggregate_v;
+  using std::is_const_v;
   using std::is_empty_v;
   using std::is_invocable_v;
+  using std::is_reference_v;
   using std::is_same_v;
+  using std::is_volatile_v;
   using std::make_index_sequence;
   using std::remove_cvref_t;
   using std::result_of_t;

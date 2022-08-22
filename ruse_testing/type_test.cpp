@@ -57,16 +57,27 @@ namespace ruse::testing {
 
   TEST(letm, type)
   {
-    STATIC_EXPECT_EQ(type<double>, letm(type<int>, [](auto x) {
-                       return letm(
-                         type<double>, [=](auto y) { return type_of(x + y); });
-                     }));
+    STATIC_EXPECT_EQ(
+      type<double>,
+      // clang-format off
+
+      letm(type<int>,    [ ](auto x) { return
+      letm(type<double>, [=](auto y) { return
+        type_of(x + y); }); })
+
+      // clang-format on
+    );
   }
 
   TEST(letf, type)
   {
     STATIC_EXPECT_EQ(
       type<double>, letf(type<int>, [](auto x) { return std::cos(x); }));
+  }
+
+  TEST(type, remove_cvref)
+  {
+    STATIC_EXPECT_EQ(type<const double&>, type<double>);
   }
 
 } // end of namespace ruse::testing

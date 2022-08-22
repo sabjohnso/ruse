@@ -7,11 +7,32 @@
 
 namespace ruse::reference {
 
+  template<typename T>
+  concept Const = is_const_v<T>;
+
+  template<typename T>
+  concept Nonconst = !Const<T>;
+
+  template<typename T>
+  concept Volatile = is_volatile_v<T>;
+
+  template<typename T>
+  concept Nonvolatile = !Volatile<T>;
+
+  template<typename T>
+  concept Reference = is_reference_v<T>;
+
+  template<typename T>
+  concept Nonreference = !Reference<T>;
+
+  template<typename T>
+  concept NonCVRef = Nonreference<T> and Nonvolatile<T> and Nonconst<T>;
+
   /**
    * @brief A type whose instances act as proxies for the
    * type specified with the template parameter
    */
-  template<typename T>
+  template<NonCVRef T>
   struct Type
   {
     using type = T;

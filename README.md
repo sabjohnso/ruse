@@ -26,6 +26,31 @@ various Lisp dialects, primarily [Racket](https://racket-lang.org)
 
 #### Comonads
 
+### Type proxies
+
+Type proxies are a way of representing types as values. In this way,
+they act as proxies for values. The variable template `type` is used
+to in this respect. The following is a proxy for the type `int`:
+
+```c++
+type<int>;
+```
+
+The type of type proxies are specialization of the template `Type`:
+
+```c++
+type<int> == Type<int>{}; // => true
+```
+
+The variable template `type` strips `const`, `volatile` and reference
+attributes from its template parameter;
+
+```c++
+type<const double&> == type<double>; // => true
+```
+
+### Template proxies
+
 ### Value wrappers
 Value wrappers are simple wrappers around values that propvide
 additional information through the type, but main the same size and
@@ -61,6 +86,7 @@ cons(3.0, 'x')
 #### Lists
 
 ##### Nothing
+
 Lists are built out of nested pairs and the value `nothing`, which is
 used to delimit the end of a list. The value `nothing` is a list
 
@@ -68,9 +94,20 @@ used to delimit the end of a list. The value `nothing` is a list
 is_list(nothing); // => true
 ```
 
+The value `nothing` is an empty list.
+
+```c++
+is_empty_list(nothing); // => true
+```
+
+There is a concept for empty lists.
+```c++
+EmptyList<decltype(nothing)>; // => true
+```
+
 ##### Nonempty lists
 
-and so are nested pairs terminated with `nothing`
+Nested pairs terminated with `nothing` are nonempty lists.
 
 ```c++
 is_list(cons(1, cons(2, nothing))) // => true
@@ -128,11 +165,26 @@ plist_ref_("y"_tag, list("x"_tag(1), "y"_tag(2), "z"_tag(3))); // => 2
 
 
 #### Vectors
+
 Like lists, vectors are nested pairs.  The primary difference between
 vectors and lists is that the lists nest the second element while
 vectors nest the first. The results in lists being constructed by
 pushing a value onto the front of an existing list and vectors being
 constructed by pushing a value onto the back of an existing vector.
+
+Vectors were implemented as an improvement over lists with regard to
+the similarity to c++ datastructures defined with `struct` or `class`.
+Those improvements are with regard to the layout of the elements which
+is important for some aspects of **Ruse** records but is not
+significant otherwise.
+
+# Empty vectors
+
+The value `empty_vector` is a vector
+
+```c++
+empty_vector
+```
 
 (a, (b, ( c, (d, nothing)))) - list
 (((vector_head{a}, b), c), d)  - vector
