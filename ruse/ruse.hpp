@@ -6,11 +6,13 @@
 #include <ruse/protocol_traits.hpp>
 #include <ruse/reference/functional.hpp>
 #include <ruse/reference/hoisted.hpp>
+#include <ruse/reference/homogeneous_vector.hpp>
 #include <ruse/reference/list.hpp>
 #include <ruse/reference/monoid.hpp>
 #include <ruse/reference/nothing.hpp>
 #include <ruse/reference/pair.hpp>
 #include <ruse/reference/parser.hpp>
+#include <ruse/reference/property_vector.hpp>
 #include <ruse/reference/protocol.hpp>
 #include <ruse/reference/pure.hpp>
 #include <ruse/reference/reader.hpp>
@@ -88,36 +90,29 @@ namespace ruse {
   using reference::dolist;
   using reference::drop;
   using reference::head;
+  using reference::homogeneous_list_ref;
+  using reference::homogeneous_list_sort;
   using reference::last;
   using reference::length;
   using reference::list;
   using reference::list_ref;
+  using reference::property_list_ref;
+  using reference::property_list_ref_;
   using reference::reverse;
   using reference::tail;
   using reference::take;
-
-  using reference::homogeneous_list_ref;
-  constexpr auto hlist_ref = reference::homogeneous_list_ref;
-
-  using reference::homogeneous_list_sort;
-  constexpr auto hlist_sort = reference::homogeneous_list_sort;
-
-  using reference::property_list_ref;
-  constexpr auto plist_ref = reference::property_list_ref;
-
-  using reference::property_list_ref_;
-  constexpr auto plist_ref_ = reference::property_list_ref_;
-
-  using reference::vacuous_list_sort;
-  constexpr auto vlist_sort = reference::vacuous_list_sort;
-
   using reference::vacuous_list_filter;
-  constexpr auto vlist_filter = reference::vacuous_list_filter;
-
-  using reference::vacuous_list_take_while;
-  constexpr auto vlist_take_while = reference::vacuous_list_take_while;
-
+  using reference::vacuous_list_sort;
   using reference::vacuous_list_take_until;
+  using reference::vacuous_list_take_while;
+
+  constexpr auto hlist_ref = reference::homogeneous_list_ref;
+  constexpr auto hlist_sort = reference::homogeneous_list_sort;
+  constexpr auto plist_ref = reference::property_list_ref;
+  constexpr auto plist_ref_ = reference::property_list_ref_;
+  constexpr auto vlist_sort = reference::vacuous_list_sort;
+  constexpr auto vlist_filter = reference::vacuous_list_filter;
+  constexpr auto vlist_take_while = reference::vacuous_list_take_while;
   constexpr auto vlist_take_until = reference::vacuous_list_take_until;
 
   using reference::foldl;
@@ -166,6 +161,7 @@ namespace ruse {
 
   using reference::is_tag;
   using reference::is_tagged;
+  using reference::is_tagged_type;
   using reference::Tag;
   using reference::Tagged;
   using reference::operator""_tag;
@@ -237,6 +233,8 @@ namespace ruse {
   using reference::type_name;
 
   // vectors
+  using reference::back;
+  using reference::back_type;
   using reference::empty_vector;
   using reference::EmptyVector;
   using reference::HomogeneousVector;
@@ -250,6 +248,7 @@ namespace ruse {
   using reference::UnitaryVector;
   using reference::vector;
   using reference::Vector;
+  using reference::vector_head_type;
   using reference::vector_length;
   using reference::vector_ref;
   using reference::vector_type_length;
@@ -262,6 +261,16 @@ namespace ruse {
   constexpr auto is_hvector_type = is_homogeneous_vector_type;
   constexpr auto is_hvector = is_homogeneous_vector;
   constexpr auto hvector_ref = homogeneous_vector_ref;
+
+  using reference::is_property_vector;
+  using reference::is_property_vector_type;
+  using reference::property_vector_has_tag;
+  using reference::property_vector_ref;
+  using reference::PropertyVector;
+
+  constexpr auto is_pvector_type = is_property_vector;
+  constexpr auto is_pvector = is_property_vector;
+  constexpr auto pvector_ref = property_vector_ref;
 
   // singleton
   using reference::singleton;

@@ -93,6 +93,19 @@ concept Point = JSONSchema<T, point_schema>;
           - [x] Applicative functors
           - [x] Monads
        - [x] Monoids
+    - [ ] Vectors
+       - [x] Regular Vectors
+          - [x] Tests
+          - [x] Implementation
+          - [x] Documentation
+       - [x] Homogeneous Vectors
+          - [x] Tests
+          - [x] Implementation
+          - [x] Documentation
+       - [x] Property Vectors
+          - [x] Tests
+          - [x] Implementation
+          - [x] Documentation
  - [ ] Code Generation
  - [ ] Compile-time execution
     - [ ] Modules

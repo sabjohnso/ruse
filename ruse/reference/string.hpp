@@ -26,7 +26,8 @@ namespace ruse::reference {
   constexpr auto is_character = []<typename T>(T) { return Character<T>; };
 
   template<typename T>
-  concept String = HomogeneousList<T> && is_character_type(head_type(type<T>));
+  concept String = HomogeneousList<T> &&
+    is_character_type(flatmap(head_type, type<T>));
 
   template<typename T>
   concept NonstringList = List<T> and !String<T>;

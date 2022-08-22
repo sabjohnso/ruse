@@ -87,8 +87,8 @@ namespace ruse::reference {
     }
   };
 
-  constexpr auto name_type = []<TypeProxy T>(T) {
-    return type<typename T::type::name_type>;
+  constexpr auto name_type = []<HasEmptyNameType T>(T) {
+    return type<typename T::name_type>;
   };
 
   constexpr auto is_tagged_type = []<typename T>(T) {

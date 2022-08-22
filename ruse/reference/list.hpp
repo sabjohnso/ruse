@@ -167,14 +167,14 @@ namespace ruse::reference {
   /**
    * @brief Return a type proxy for the head of the input type proxy.
    */
-  constexpr auto head_type = []<NonemptyList T>(Type<T>) {
+  constexpr auto head_type = []<NonemptyList T>(T) {
     return type<typename T::first_type>;
   };
 
   /**
    * @brief Return a type proxy for the tail of the input type proxy.
    */
-  constexpr auto tail_type = []<List T>(Type<T>) {
+  constexpr auto tail_type = []<List T>(T) {
     if constexpr (Pair<T>) {
       return type<typename T::second_type>;
     } else {
@@ -190,8 +190,8 @@ namespace ruse::reference {
     constexpr auto recur = []<List U>(auto recur, Type<U>) {
       if constexpr (EmptyList<U>) {
         return true;
-      } else if (is_vacuous_type(head_type(type<U>))) {
-        return recur(recur, tail_type(type<U>));
+      } else if (is_vacuous_type(flatmap(head_type, type<U>))) {
+        return recur(recur, flatmap(tail_type, type<U>));
       } else {
         return false;
       }
@@ -220,8 +220,9 @@ namespace ruse::reference {
       if constexpr (UnitaryList<U>) {
         return true;
       } else if constexpr (
-        Pair<U> && head_type(type<U>) == head_type(tail_type(type<U>))) {
-        return recur(recur, tail_type(type<U>));
+        Pair<U> && flatmap(head_type, type<U>) ==
+                     flatmap(head_type, flatmap(tail_type, type<U>))) {
+        return recur(recur, flatmap(tail_type, type<U>));
       } else {
         return false;
       }
@@ -256,7 +257,7 @@ namespace ruse::reference {
     constexpr auto aux = []<List U>(auto recur, Type<U>) {
       if constexpr (Pair<U>) {
         if constexpr (Pair<typename U::first_type>) {
-          return recur(recur, tail_type(type<U>));
+          return recur(recur, flatmap(tail_type, type<U>));
         } else {
           return false;
         }
@@ -309,8 +310,8 @@ namespace ruse::reference {
   constexpr auto is_property_list_type = []<typename T>(T) {
     constexpr auto aux = []<List U>(auto recur, Type<U>) {
       if constexpr (NonemptyList<U>) {
-        if constexpr (is_tagged_type(head_type(type<U>))) {
-          return recur(recur, tail_type(type<U>));
+        if constexpr (is_tagged_type(flatmap(head_type, type<U>))) {
+          return recur(recur, flatmap(tail_type, type<U>));
         } else {
           return false;
         }
@@ -630,7 +631,9 @@ namespace ruse::reference {
       constexpr auto recur = []<Tag K, PropertyList T>(
                                auto recur, K key, T xs) {
         if constexpr (NonemptyList<T>) {
-          if constexpr (name_type(type<K>) == name_type(head_type(type<T>))) {
+          if constexpr (
+            flatmap(name_type, type<K>) ==
+            flatmap(name_type, flatmap(head_type, type<T>))) {
             return true;
           } else {
             return recur(recur, key, tail(xs));
@@ -650,7 +653,9 @@ namespace ruse::reference {
     curry(nat<2>, [](Empty auto tag, PropertyList auto xs) {
       constexpr auto aux = []<Tag K, PropertyList T>(auto recur, K key, T xs) {
         if constexpr (NonemptyList<T>) {
-          if constexpr (name_type(type<K>) == name_type(head_type(type<T>))) {
+          if constexpr (
+            flatmap(name_type, type<K>) ==
+            flatmap(name_type, flatmap(head_type, type<T>))) {
             return head(xs);
           } else {
             return recur(recur, key, tail(xs));
@@ -698,15 +703,6 @@ namespace ruse::reference {
     };
     u(aux, xs);
   };
-
-  // /**
-  //  * @brief Return the concatenation of the two input lists.
-  //  */
-  // constexpr auto
-  // operator+(List auto xs, List auto ys)
-  // {
-  //   return append(xs, ys);
-  // };
 
   /**
    * @brief Return the concatenation of multiple copies of the input list

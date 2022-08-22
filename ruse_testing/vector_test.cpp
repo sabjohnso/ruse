@@ -105,6 +105,11 @@ namespace ruse::testing {
     STATIC_EXPECT_EQ(vector_ref(nat<2>, vector(1, 2, 3)), 3);
   }
 
+  TEST(vector, back_type)
+  {
+    STATIC_EXPECT_EQ(type<int>, back_type(vector('a', 3.4, 1)));
+  }
+
   TEST(homogeneous_vector, is_hvector_affirmative)
   {
     STATIC_EXPECT_TRUE(is_hvector(vector(1, 2, 3)));
