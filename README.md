@@ -20,9 +20,48 @@ various Lisp dialects, primarily [Racket](https://racket-lang.org)
 
 #### Functors
 
+```c++
+fmap(sqr, list(1, 2, 3)) // => list(1, 4, 9)
+```
+
+```c++
+letf(list(1, 2, 3), [](auto x){ return
+      x+x;
+});
+// => list(2, 4, 6)
+```
+
 #### Applicative functors
+```c++
+fapply(fmap(add, list(1, 2)), list(3, 4)); // => list(4, 5, 5, 6)
+```
 
 #### Monads
+```c++
+flatmap(list, list(1, 2, 3)); // => list(1, 2, 3)
+```
+
+```c++
+flatmap(pure, list(1, 2, 3)); // => list(1, 2, 3)
+```
+
+```c++
+letm(list(1, 2), [ ](auto x){ return
+letm(list(3, 4), [](auto x){ return
+      pure(x + y); }); });
+// => list(4, 5, 5, 6)
+```
+
+```c++
+letm(type<int>,    [ ](auto x){ return
+letm(type<double>, [=](auto y){ return
+      pure(x+y); }); });
+// => type<double>
+```
+
+```c++
+flatten(list(1, 2), list(3, 4)); // => list(1, 2, 3, 4)
+```
 
 #### Comonads
 
