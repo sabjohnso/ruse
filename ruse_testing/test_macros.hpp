@@ -4,11 +4,7 @@
 // ... Testing header files
 //
 #include <gtest/gtest.h>
-
-#define RUSE_QUOTE_AUX(...) #__VA_ARGS__
-#define RUSE_QUOTE(...) RUSE_QUOTE_AUX(__VA_ARGS__)
-
-#define RUSE_FORCE_SEMICOLON() static_assert(true, "")
+#include <ruse/reflection_macros.hpp>
 
 #define STATIC_EXPECT_TRUE(...)                                                \
   do {                                                                         \

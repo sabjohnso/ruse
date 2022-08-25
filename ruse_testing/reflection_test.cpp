@@ -1,4 +1,11 @@
 //
+// ... standard header files
+//
+#include <any>
+#include <tuple>
+#include <utility>
+
+//
 // ... Testing header files
 //
 #include <gtest/gtest.h>
@@ -12,12 +19,9 @@
 //
 // ... ruse header files
 //
+#include <ruse/reflection_macros.hpp>
 #include <ruse/ruse.hpp>
 #include <ruse/show.hpp>
-
-#include <any>
-#include <tuple>
-#include <utility>
 
 namespace example {
   struct A
@@ -74,6 +78,7 @@ namespace ruse::testing {
       int y;
       int z;
     };
+
     struct B
     {
       A x;
@@ -86,6 +91,7 @@ namespace ruse::testing {
   {
     struct A
     {};
+
     STATIC_EXPECT_EQ(aggregate_member_count<A>, 0);
   }
 
@@ -117,6 +123,25 @@ namespace ruse::testing {
       aggregate_member_types<point>);
   }
 
-  TEST(pfr, example) {}
+  TEST(reflection, named_members)
+  {
+    struct point
+    {
+      RUSE_FIELD(double, x){};
+      RUSE_FIELD(double, y){};
+      RUSE_FIELD(double, z){};
+    };
+
+    STATIC_EXPECT_TRUE(NamedAggregate<point>);
+  }
+
+  RUSE_ENUM(things, int, a, b, c);
+  TEST(reflection, enum_names)
+  {
+    STATIC_EXPECT_TRUE(type_of(things::a) == type<things>);
+    STATIC_EXPECT_TRUE(type_of(things::b) == type<things>);
+    STATIC_EXPECT_TRUE(type_of(things::c) == type<things>);
+    STATIC_EXPECT_TRUE(std::size(get_enum_values(type<things>)) == 3);
+  }
 
 } // end of namespace ruse::testing

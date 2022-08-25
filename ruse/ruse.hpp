@@ -36,6 +36,7 @@ namespace ruse {
   using reference::case_lambda;
   using reference::cut;
   using reference::cute;
+  using reference::Invocable;
 
   using reference::compose;
   using reference::constantly;
@@ -159,6 +160,7 @@ namespace ruse {
   using reference::String;
   using reference::operator""_hoist;
   using reference::operator""_s;
+  using reference::named;
 
   using reference::is_tag;
   using reference::is_tagged;
@@ -231,6 +233,8 @@ namespace ruse {
   using reference::aggregate_member_count;
   using reference::aggregate_member_types;
   using reference::AggregateInitializable;
+  using reference::Named;
+  using reference::NamedAggregate;
   using reference::type_name;
 
   // vectors

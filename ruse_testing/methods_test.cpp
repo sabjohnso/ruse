@@ -70,4 +70,5 @@ namespace ruse::experimental::testing {
       cons(3, nothing),
       send<"push!">(int_stack, send<"make-new">(int_stack), 3));
   }
+
 } // namespace ruse::experimental::testing

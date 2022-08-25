@@ -3,7 +3,9 @@
 //
 // ... ruse header files
 //
+#include <ruse/reference/functional.hpp>
 #include <ruse/reference/import.hpp>
+#include <ruse/reference/string.hpp>
 #include <ruse/reference/type.hpp>
 
 namespace ruse::reference {
@@ -131,5 +133,59 @@ namespace ruse::reference {
 
   template<Aggregate T>
   constexpr auto aggregate_member_types = get_aggregate_member_types(type<T>);
+
+  template<Character Char, integer N>
+  struct Name
+  {
+    using character_type = Char;
+    static constexpr auto extent = N;
+
+    constexpr Name(const Char* input)
+    {
+      for (integer i = 0; i < N; ++i) {
+        value[i] = input[i];
+      }
+    }
+
+    Char value[N];
+  };
+
+  template<typename Char, auto N>
+  Name(const Char (&)[N]) -> Name<Char, N>;
+
+  template<class T, Name name_>
+  struct named
+  {
+    static constexpr auto name = name_;
+    using value_type = T;
+    T value{};
+
+    constexpr named() = default;
+
+    constexpr named(value_type value)
+      : value(value)
+    {}
+
+    constexpr operator const value_type&() const& { return value; }
+    constexpr
+    operator value_type&&() &&
+    {
+      return std::move(value);
+    }
+    operator value_type&() & { return value; };
+  };
+
+  constexpr auto is_named_type = case_lambda(
+    []<class T, Name name_>(Type<named<T, name_>>) { return true; },
+    [](auto) { return false; });
+
+  template<typename T>
+  concept Named = is_named_type(type<T>);
+
+  template<typename T>
+  concept NamedAggregate = Aggregate<T> and foldl(
+    []<class U>(bool accum, Type<U>) { return accum and Named<U>; },
+    true,
+    aggregate_member_types<T>);
 
 } // end of namespace ruse::reference

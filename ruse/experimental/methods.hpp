@@ -62,4 +62,11 @@ namespace ruse::experimental {
   template<fixed_string MethodName>
   constexpr send_invocation<MethodName> send{};
 
+  template<fixed_string Fn, fixed_string... formals>
+  struct signature
+  {};
+
+  template<fixed_string Fn, fixed_string... Formals>
+  constexpr signature<Fn, Formals...> sig{};
+
 } // end of namespace ruse::experimental
