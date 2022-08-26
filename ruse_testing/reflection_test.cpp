@@ -135,13 +135,22 @@ namespace ruse::testing {
     STATIC_EXPECT_TRUE(NamedAggregate<point>);
   }
 
-  RUSE_ENUM(things, int, a, b, c);
+  RUSE_ENUM(things, int, (a), (b), (c));
   TEST(reflection, enum_names)
   {
     STATIC_EXPECT_TRUE(type_of(things::a) == type<things>);
     STATIC_EXPECT_TRUE(type_of(things::b) == type<things>);
     STATIC_EXPECT_TRUE(type_of(things::c) == type<things>);
     STATIC_EXPECT_TRUE(std::size(get_enum_values(type<things>)) == 3);
+  }
+
+  RUSE_ENUM(more_things, char, (a, 'a'), (b, 'b'), (c, 'c'));
+
+  TEST(reflection, enum_names_with_explicit_values)
+  {
+    STATIC_EXPECT_TRUE(char(more_things::a) == 'a');
+    STATIC_EXPECT_TRUE(char(more_things::b) == 'b');
+    STATIC_EXPECT_TRUE(char(more_things::c) == 'c');
   }
 
 } // end of namespace ruse::testing

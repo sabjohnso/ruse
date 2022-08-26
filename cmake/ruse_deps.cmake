@@ -9,3 +9,5 @@ find_package(CMakeUtilities REQUIRED)
 
 find_package(pfr REQUIRED)
 set(pfr_EXCLUDE_FROM_ALL)
+
+find_package(Boost REQUIRED)
