@@ -106,6 +106,20 @@ namespace ruse::reference {
     return strip_enum_namespace(get_enum_name(hoisted<x>{}));
   }
 
+  constexpr string_view
+  strip_qualification(string_view str)
+  {
+    return str.substr(
+      str.find_last_of(string_view("::")) + 1, string_view::npos);
+  }
+
+  template<Enum auto x>
+  constexpr auto
+  get_unqualified_enum_name(hoisted<x>)
+  {
+    return strip_qualification(get_enum_name(hoisted<x>{}));
+  }
+
   template<typename T>
   constexpr auto type_name = get_type_name(type<T>);
 

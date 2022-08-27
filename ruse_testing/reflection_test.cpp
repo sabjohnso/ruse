@@ -214,4 +214,19 @@ namespace ruse::testing {
       get_short_enum_name(hoisted<ns1::ns2::more_things::def>{}),
       std::string_view("more_things::def"));
   }
+
+  TEST(relfection, unqualified_enum_name)
+  {
+    EXPECT_EQ(
+      std::string_view("a"),
+      get_unqualified_enum_name(hoisted<more_things::a>{}));
+
+    EXPECT_EQ(
+      std::string_view("bc"),
+      get_unqualified_enum_name(hoisted<more_things::bc>{}));
+
+    EXPECT_EQ(
+      std::string_view("def"),
+      get_unqualified_enum_name(hoisted<more_things::def>{}));
+  }
 } // end of namespace ruse::testing
