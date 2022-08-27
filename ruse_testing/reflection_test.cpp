@@ -144,13 +144,74 @@ namespace ruse::testing {
     STATIC_EXPECT_TRUE(std::size(get_enum_values(type<things>)) == 3);
   }
 
-  RUSE_ENUM(more_things, char, (a, 'a'), (b, 'b'), (c, 'c'));
-
+  RUSE_ENUM(more_things, char, (a, 'x'), (bc, 'y'), (def, 'z'));
   TEST(reflection, enum_names_with_explicit_values)
   {
-    STATIC_EXPECT_TRUE(char(more_things::a) == 'a');
-    STATIC_EXPECT_TRUE(char(more_things::b) == 'b');
-    STATIC_EXPECT_TRUE(char(more_things::c) == 'c');
+    STATIC_EXPECT_TRUE(char(more_things::a) == 'x');
+    STATIC_EXPECT_TRUE(char(more_things::bc) == 'y');
+    STATIC_EXPECT_TRUE(char(more_things::def) == 'z');
   }
 
+  TEST(reflection, long_enum_names)
+  {
+    STATIC_EXPECT_EQ(
+      get_enum_name(hoisted<more_things::a>{}),
+      std::string_view("ruse::testing::more_things::a"));
+
+    EXPECT_EQ(
+      get_short_enum_name(hoisted<more_things::a>{}),
+      std::string_view("more_things::a"));
+
+    STATIC_EXPECT_EQ(
+      get_enum_name(hoisted<more_things::bc>{}),
+      std::string_view("ruse::testing::more_things::bc"));
+
+    EXPECT_EQ(
+      get_short_enum_name(hoisted<more_things::bc>{}),
+      std::string_view("more_things::bc"));
+
+    STATIC_EXPECT_EQ(
+      get_enum_name(hoisted<more_things::def>{}),
+      std::string_view("ruse::testing::more_things::def"));
+
+    EXPECT_EQ(
+      get_short_enum_name(hoisted<more_things::def>{}),
+      std::string_view("more_things::def"));
+  }
+
+  TEST(reflection, short_enum_names)
+  {
+
+    STATIC_EXPECT_EQ(
+      get_short_enum_name(hoisted<more_things::a>{}),
+      std::string_view("more_things::a"));
+
+    STATIC_EXPECT_EQ(
+      get_short_enum_name(hoisted<more_things::bc>{}),
+      std::string_view("more_things::bc"));
+
+    STATIC_EXPECT_EQ(
+      get_short_enum_name(hoisted<more_things::def>{}),
+      std::string_view("more_things::def"));
+  }
+
+  namespace ns1::ns2 {
+    RUSE_ENUM(more_things, char, (a, 'x'), (bc, 'y'), (def, 'z'));
+  } // end of namespace ns1::ns2
+
+  TEST(reflection, short_enum_namesin_deeper_namespace)
+  {
+
+    STATIC_EXPECT_EQ(
+      get_short_enum_name(hoisted<ns1::ns2::more_things::a>{}),
+      std::string_view("more_things::a"));
+
+    STATIC_EXPECT_EQ(
+      get_short_enum_name(hoisted<ns1::ns2::more_things::bc>{}),
+      std::string_view("more_things::bc"));
+
+    STATIC_EXPECT_EQ(
+      get_short_enum_name(hoisted<ns1::ns2::more_things::def>{}),
+      std::string_view("more_things::def"));
+  }
 } // end of namespace ruse::testing

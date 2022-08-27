@@ -20,6 +20,7 @@ namespace ruse::reference {
   using std::is_aggregate_v;
   using std::is_const_v;
   using std::is_empty_v;
+  using std::is_enum_v;
   using std::is_invocable_v;
   using std::is_reference_v;
   using std::is_same_v;

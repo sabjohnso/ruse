@@ -11,16 +11,19 @@
 namespace ruse::reference {
 
   template<typename T>
+  concept Enum = is_enum_v<T>;
+
+  template<typename T>
   constexpr auto
   pretty_function(T)
   {
-    return std::string_view{__PRETTY_FUNCTION__};
+    return string_view{__PRETTY_FUNCTION__};
   }
 
   constexpr auto
-  strip_garbage(std::string_view str)
+  strip_garbage(string_view str)
   {
-    const auto start = str.find('<') + 1;
+    const auto start = str.find_last_of('<') + 1;
     const auto stop = str.find_last_of('>');
     return str.substr(start, stop - start);
   }
@@ -30,6 +33,77 @@ namespace ruse::reference {
   get_type_name(Type<T>)
   {
     return strip_garbage(pretty_function(type<T>));
+  }
+
+  template<Enum auto x>
+  constexpr auto
+  get_enum_name(hoisted<x>)
+  {
+    return strip_garbage(pretty_function(hoisted<x>{}));
+  };
+
+  constexpr integer
+  string_view_count(string_view pattern, string_view str)
+  {
+    const auto recur =
+      [=](auto recur, string_view str, integer accum) -> integer {
+      const auto pos = str.find(pattern);
+      return pos == string_view::npos
+               ? accum
+               : recur(
+                   recur,
+                   str.substr(pos + std::size(pattern), string_view::npos),
+                   accum + 1);
+    };
+    return recur(recur, str, 0);
+  }
+
+  constexpr integer
+  string_view_find_nth_from_back(
+    string_view pattern,
+    integer n,
+    string_view str)
+  {
+    const auto recur = [=](
+                         auto recur,
+                         string_view str,
+                         integer m,
+                         integer accum_from_back) -> integer {
+      return m ? [=](auto pos) {
+        return recur(
+          recur,
+          str.substr(0, pos - std::size(pattern)),
+          m - 1,
+          accum_from_back + std::size(str) + std::size(pattern) - pos -1);
+      }(str.find_last_of(pattern))
+        : accum_from_back;
+    };
+
+    return std::size(str) + 1 - recur(recur, str, n, 0);
+  }
+
+  constexpr bool
+  enum_name_has_namespace(string_view enum_name)
+  {
+    return string_view_count(string_view{"::"}, enum_name) > 1;
+  }
+
+  constexpr auto
+  strip_enum_namespace(string_view enum_name)
+  {
+    return enum_name_has_namespace(enum_name)
+             ? enum_name.substr(
+                 string_view_find_nth_from_back(
+                   string_view{"::"}, 2, enum_name),
+                 string_view::npos)
+             : enum_name;
+  }
+
+  template<Enum auto x>
+  constexpr auto
+  get_short_enum_name(hoisted<x>)
+  {
+    return strip_enum_namespace(get_enum_name(hoisted<x>{}));
   }
 
   template<typename T>
