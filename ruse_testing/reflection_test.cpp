@@ -141,7 +141,20 @@ namespace ruse::testing {
     STATIC_EXPECT_TRUE(type_of(things::a) == type<things>);
     STATIC_EXPECT_TRUE(type_of(things::b) == type<things>);
     STATIC_EXPECT_TRUE(type_of(things::c) == type<things>);
-    STATIC_EXPECT_TRUE(std::size(get_enum_values(type<things>)) == 3);
+    STATIC_EXPECT_TRUE(length(get_enum_values(type<things>)) == 3);
+    std::cout << enum_values<things> << std::endl;
+    std::cout << enum_names<things> << std::endl;
+    STATIC_EXPECT_TRUE(is_list(enum_values<things>));
+    STATIC_EXPECT_TRUE(is_list(enum_names<things>));
+    STATIC_EXPECT_TRUE(is_list(enum_names_short<things>));
+    STATIC_EXPECT_TRUE(is_list(enum_names_unqualified<things>));
+    STATIC_EXPECT_EQ(
+      std::string_view("ruse::testing::things::a"),
+      lookup_enum_name(things::a));
+    STATIC_EXPECT_EQ(
+      std::string_view("things::a"), lookup_enum_name_short(things::a));
+    STATIC_EXPECT_EQ(
+      std::string_view("a"), lookup_enum_name_unqualified(things::a));
   }
 
   RUSE_ENUM(more_things, char, (a, 'x'), (bc, 'y'), (def, 'z'));

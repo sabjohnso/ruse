@@ -38,12 +38,12 @@
   constexpr auto get_enum_values(::ruse::Type<name>)                    \
   {                                                                     \
     using enum name;                                                    \
-    return std::array{                                                  \
+    return ::ruse::list(                                                \
       _xRUSE_POP(BOOST_PP_SEQ_TO_TUPLE(                                 \
         BOOST_PP_SEQ_TRANSFORM(                                         \
           _xRUSE_ENUM_VALUE_NAME_OP,                                    \
           BOOST_PP_NIL,                                                 \
-          BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))))};                    \
+          BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__)))));                    \
   }
 // clang-format on
 #define RUSE_ENUM(name, type, ...)                                             \

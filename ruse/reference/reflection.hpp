@@ -5,6 +5,7 @@
 //
 #include <ruse/reference/functional.hpp>
 #include <ruse/reference/import.hpp>
+#include <ruse/reference/list.hpp>
 #include <ruse/reference/string.hpp>
 #include <ruse/reference/type.hpp>
 
@@ -12,6 +13,24 @@ namespace ruse::reference {
 
   template<typename T>
   concept Enum = is_enum_v<T>;
+
+  namespace details
+  {
+    constexpr nothing_s get_enum_values(auto) { return nothing; };
+
+    struct evaluate_enum_values_fn
+    {
+      template<Enum T>
+      constexpr auto
+      operator()(Type<T>) const
+      {
+        return get_enum_values(type<T>);
+      }
+    };
+
+  } // end of namespace details
+  constexpr const auto& evaluate_enum_values = ruse::details::static_const<
+    ruse::reference::details::evaluate_enum_values_fn>;
 
   template<typename T>
   constexpr auto
@@ -119,6 +138,64 @@ namespace ruse::reference {
   {
     return strip_qualification(get_enum_name(hoisted<x>{}));
   }
+
+  template<typename T>
+  constexpr auto enum_values = evaluate_enum_values(type<T>);
+
+  template<typename T>
+  concept ReflectedEnum = Enum<T> and(enum_values<T> != nothing);
+
+  template<typename T>
+  constexpr auto enum_names = []<auto... Index>(index_sequence<Index...>)
+  {
+    return list(
+      get_enum_name(hoisted<list_ref(nat<Index>, enum_values<T>)>{})...);
+  }
+  (make_index_sequence<length(enum_values<T>)>());
+
+  template<Enum T>
+  constexpr auto enum_names_short = []<auto... Index>(index_sequence<Index...>)
+  {
+    return list(
+      get_short_enum_name(hoisted<list_ref(nat<Index>, enum_values<T>)>{})...);
+  }
+  (make_index_sequence<length(enum_values<T>)>());
+
+  template<Enum T>
+  constexpr auto enum_names_unqualified = [
+  ]<auto... Index>(index_sequence<Index...>)
+  {
+    return list(get_unqualified_enum_name(
+      hoisted<list_ref(nat<Index>, enum_values<T>)>{})...);
+  }
+  (make_index_sequence<length(enum_values<T>)>());
+
+  constexpr auto lookup_enum_name = []<Enum T>(T x) {
+    const auto recur = [=](auto recur, integer index) -> string_view {
+      return x == homogeneous_list_ref(index, enum_values<T>)
+               ? homogeneous_list_ref(index, enum_names<T>)
+               : recur(recur, index + 1);
+    };
+    return recur(recur, 0);
+  };
+
+  constexpr auto lookup_enum_name_short = []<Enum T>(T x) {
+    const auto recur = [=](auto recur, integer index) -> string_view {
+      return x == homogeneous_list_ref(index, enum_values<T>)
+               ? homogeneous_list_ref(index, enum_names_short<T>)
+               : recur(recur, index + 1);
+    };
+    return recur(recur, 0);
+  };
+
+  constexpr auto lookup_enum_name_unqualified = []<Enum T>(T x) {
+    const auto recur = [=](auto recur, integer index) -> string_view {
+      return x == homogeneous_list_ref(index, enum_values<T>)
+               ? homogeneous_list_ref(index, enum_names_unqualified<T>)
+               : recur(recur, index + 1);
+    };
+    return recur(recur, 0);
+  };
 
   template<typename T>
   constexpr auto type_name = get_type_name(type<T>);
@@ -275,5 +352,4 @@ namespace ruse::reference {
     []<class U>(bool accum, Type<U>) { return accum and Named<U>; },
     true,
     aggregate_member_types<T>);
-
 } // end of namespace ruse::reference

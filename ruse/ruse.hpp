@@ -233,7 +233,14 @@ namespace ruse {
   using reference::aggregate_member_count;
   using reference::aggregate_member_types;
   using reference::AggregateInitializable;
+  using reference::enum_names;
+  using reference::enum_names_short;
+  using reference::enum_names_unqualified;
+  using reference::enum_values;
   using reference::get_enum_name;
+  using reference::lookup_enum_name;
+  using reference::lookup_enum_name_short;
+  using reference::lookup_enum_name_unqualified;
   using reference::Named;
   using reference::NamedAggregate;
   using reference::type_name;

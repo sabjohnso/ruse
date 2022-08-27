@@ -14,6 +14,13 @@
 
 namespace ruse::reference {
 
+  template<Enum T>
+  std::ostream&
+  operator<<(std::ostream& os, T const)
+  {
+    return os << "enum_value";
+  }
+
   template<typename T, typename Name>
   std::ostream&
   operator<<(std::ostream& os, tagged<T, Name> x)
