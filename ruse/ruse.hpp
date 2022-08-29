@@ -124,8 +124,11 @@ namespace ruse {
   using reference::operator==;
 
   using reference::add1;
+  using reference::is_nat;
+  using reference::is_nat_type;
   using reference::Nat;
   using reference::nat;
+  using reference::Natural;
   using reference::sub1;
 
   using reference::Character;
@@ -193,6 +196,7 @@ namespace ruse {
   using reference::equal;
   using reference::fail;
   using reference::item;
+  using reference::many;
   using reference::opt;
   using reference::parse_result_sequence;
   using reference::parse_result_value;
@@ -200,7 +204,6 @@ namespace ruse {
   using reference::sat;
   using reference::seq;
   using reference::word;
-  // using reference::many;
   // using reference::many1;
 
   // reader

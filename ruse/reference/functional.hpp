@@ -80,4 +80,14 @@ namespace ruse::reference {
     return [=](auto... xs) { return f(xs..., ys...); };
   };
 
+  // TODO: This does not belong here
+  constexpr auto is_nat_type = case_lambda(
+    []<integer N>(Type<Nat<N>>) { return true; },
+    [](auto) { return false; });
+
+  template<typename T>
+  concept Natural = is_nat_type(type<T>);
+
+  constexpr auto is_nat = []<class T>(T) { return Natural<T>; };
+
 } // namespace ruse::reference

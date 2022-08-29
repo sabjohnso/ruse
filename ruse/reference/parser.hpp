@@ -211,8 +211,22 @@ namespace ruse::reference {
   constexpr auto opt =
     curry(nat<1>, [](Vacuous auto p) { return alt(p, result(nothing)); });
 
-  // constexpr auto many = curry(nat<1>, []<Vacuous Parser>(Parser) {
-  //   return u([]<typename Recur>(Recur) {
+  constexpr auto many = curry(nat<1>, []<Vacuous Parser>(Parser) {
+    constexpr auto recur = [](auto recur) {
+      return conj(opt(Parser{}, [=]<typename T>(T) {
+        if constexpr (Nothing<T>) {
+          return result(hoisted_nothing);
+        } else {
+          return conj(recur(recur), []<Vacuous Ts>(Ts) {
+            return result(hoisted_cons(T{}, Ts{}));
+          });
+        }
+      }));
+    };
+    return recur(recur);
+  });
+
+  //     return u([]<typename Recur>(Recur) {
   //     return conj(opt(Parser{}), []<typename T>(T) {
   //       if constexpr (Nothing<T>) {
   //         return result(hoisted_nothing);
@@ -222,7 +236,7 @@ namespace ruse::reference {
   //         });
   //       }
   //     });
-  //   });
+  //     });
   // });
 
   // constexpr auto many1 = curry(nat<1>, []<Vacuous Parser>(Parser) {

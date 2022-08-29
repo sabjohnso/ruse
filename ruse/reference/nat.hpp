@@ -4,6 +4,7 @@
 // ... ruse header files
 //
 #include <ruse/reference/base_types.hpp>
+#include <ruse/reference/type.hpp>
 
 namespace ruse::reference {
   template<integer N>
@@ -62,6 +63,8 @@ namespace ruse::reference {
     {
       return false;
     }
+
+    constexpr operator bool() const { return N > 0; }
   };
 
   template<integer N>

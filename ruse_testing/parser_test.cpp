@@ -209,7 +209,8 @@ namespace ruse::testing {
     STATIC_EXPECT_EQ(nothing, parse_result_value(head(output)));
   }
 
-  // TEST(parse, many_match_3){
+  // TEST(parse, many_match_3)
+  // {
   //   constexpr auto parser = many(equal<'a'>);
   //   constexpr auto output = parser("aaabc"_hoist);
   //   STATIC_EXPECT_TRUE(is_nonempty_list(output));
