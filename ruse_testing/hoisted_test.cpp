@@ -75,4 +75,10 @@ namespace ruse::testing {
       "AB"_hoist, fmap([](auto x) -> char { return x - 32; }, "ab"_hoist));
   }
 
+  TEST(hoisted_list, length)
+  {
+    STATIC_EXPECT_TRUE(HoistedString<decltype(str<"abc">)>);
+    STATIC_EXPECT_EQ(nat<3>, hoisted_length(str<"abc">));
+  }
+
 } // end of namespace ruse::testing

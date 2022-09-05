@@ -78,36 +78,36 @@ namespace ruse::reference {
     }
   }
 
-  template<auto Parser, auto... Parsers>
-  std::ostream&
-  operator<<(std::ostream& os, sequence_parser<Parser, Parsers...> parser)
-  {
-    os << "sequence_parser<";
-    print_delimited(os, parser);
-    os << ">{}";
-    return os;
-  };
+  // template<auto Parser, auto... Parsers>
+  // std::ostream&
+  // operator<<(std::ostream& os, sequence_parser<Parser, Parsers...> parser)
+  // {
+  //   os << "sequence_parser<";
+  //   print_delimited(os, parser);
+  //   os << ">{}";
+  //   return os;
+  // };
 
-  template<typename T>
-  std::ostream&
-  operator<<(std::ostream& os, result_parser<T>)
-  {
-    os << "result(" << T{} << ")";
-    return os;
-  }
+  // template<typename T>
+  // std::ostream&
+  // operator<<(std::ostream& os, result_parser<T>)
+  // {
+  //   os << "result(" << T{} << ")";
+  //   return os;
+  // }
 
-  std::ostream&
-  operator<<(std::ostream& os, item_parser)
-  {
-    return os << "item";
-  }
+  // std::ostream&
+  // operator<<(std::ostream& os, item_parser)
+  // {
+  //   return os << "item";
+  // }
 
-  template<typename T>
-  std::ostream&
-  operator<<(std::ostream& os, empty_parser<T>)
-  {
-    return os << "empty(" << T{} << ")";
-  }
+  // template<typename T>
+  // std::ostream&
+  // operator<<(std::ostream& os, empty_parser<T>)
+  // {
+  //   return os << "empty(" << T{} << ")";
+  // }
 
   template<auto Value>
   std::ostream&

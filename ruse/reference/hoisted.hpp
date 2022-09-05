@@ -220,7 +220,7 @@ namespace ruse::reference {
     });
 
   constexpr auto hoisted_length = []<HoistedList T>(T) {
-    return hoist([] { return length(T::values); });
+    return nat<length(T::values)>;
   };
 
   template<HoistedList T>

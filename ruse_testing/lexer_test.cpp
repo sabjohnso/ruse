@@ -14,50 +14,93 @@
 
 namespace ruse::experimental::lexer::testing {
 
+  constexpr auto letter = primitive::guarded<
+    [](char c) { return c >= 'a' && c <= 'z'; },
+    primitive::Item{.count = 1}>;
+
+  constexpr auto digit = primitive::guarded<
+    [](char c) { return c >= '0' && c <= '9'; },
+    primitive::Item{.count = 1}>;
+
   TEST(lexer, primitive_item)
   {
-    STATIC_EXPECT_EQ(nat<1>, primitive::run(primitive::item<1>, "abc"_s));
-    STATIC_EXPECT_EQ(nat<2>, primitive::run(primitive::item<2>, "abc"_s));
-    STATIC_EXPECT_EQ(nat<3>, primitive::run(primitive::item<3>, "abc"_s));
-    STATIC_EXPECT_EQ(
-      nat<0>, primitive::run(primitive::item<4>, "abc"_s)); // <- parse failure
+    EXPECT_EQ(
+      1, primitive::run(primitive::Item{.count = 1}, string_view("abc")));
+    EXPECT_EQ(
+      2, primitive::run(primitive::Item{.count = 2}, string_view("abc")));
+    EXPECT_EQ(
+      3, primitive::run(primitive::Item{.count = 3}, string_view("abc")));
+    EXPECT_EQ(
+      0, primitive::run(primitive::Item{.count = 4}, string_view("abc")));
   }
 
-  // TEST(lexer, primitive_guarded)
-  // {
-  //   EXPECT_EQ(
-  //     type_of(nat<1>),
-  //     type_of(primitive::run(
-  //       primitive::guarded<
-  //         [](char x) { return x >= 'a' && x <= 'z'; },
-  //         primitive::item<1>>,
-  //       "abc"_s)));
+  TEST(lexer, primitive_guarded)
+  {
+    EXPECT_EQ(
+      1,
+      primitive::run(
+        primitive::guarded<
+          [](char x) { return x >= 'a' && x <= 'z'; },
+          primitive::Item{.count = 1}>,
+        string_view("abc")));
 
-  //   EXPECT_EQ(
-  //     nat<0>,
-  //     primitive::run(
-  //       primitive::guarded<
-  //         [](char x) { return x >= 'a' && x <= 'z'; },
-  //         primitive::item<1>>,
-  //       "ABC"_s));
-  // }
+    EXPECT_EQ(
+      0,
+      primitive::run(
+        primitive::guarded<
+          [](char x) { return x >= 'a' && x <= 'z'; },
+          primitive::Item{.count = 1}>,
+        string_view("ABC")));
+  }
 
-  // TEST(lexer, primitive_cut)
-  // {
-  //   constexpr auto letter = primitive::
-  //     guarded<[](char c) { return c >= 'a' && c <= 'z'; },
-  //     primitive::item<1>>;
+  TEST(lexer, primitive_cut)
+  {
 
-  //   constexpr auto digit = primitive::
-  //     guarded<[](char c) { return c >= '0' && c <= '9'; },
-  //     primitive::item<1>>;
+    EXPECT_EQ(
+      1, primitive::run(primitive::cut<letter, digit>, string_view("a")));
+    EXPECT_EQ(
+      1, primitive::run(primitive::cut<letter, digit>, string_view("1")));
+    EXPECT_EQ(
+      0, primitive::run(primitive::cut<letter, digit>, string_view("$")));
+  }
 
-  //   STATIC_EXPECT_EQ(
-  //     nat<1>, primitive::run(primitive::cut<letter, digit>, "a"_s));
-  //   STATIC_EXPECT_EQ(
-  //     nat<1>, primitive::run(primitive::cut<letter, digit>, "1"_s));
-  //   STATIC_EXPECT_EQ(
-  //     nat<0>, primitive::run(primitive::cut<letter, digit>, "$"_s));
-  // }
+  TEST(lexer, primitive_sequence)
+  {
+    EXPECT_EQ(
+      2, primitive::run(primitive::seq<letter, digit>, string_view("a1b2")));
+
+    EXPECT_EQ(
+      0, primitive::run(primitive::seq<letter, digit>, string_view("1a2b")));
+  }
+
+  TEST(lexer, primitive_alt)
+  {
+    EXPECT_EQ(
+      2,
+      primitive::run(
+        primitive::alt<primitive::seq<letter, digit>, letter>,
+        string_view("a1")));
+  }
+
+  TEST(lexer, primitve_bind)
+  {
+    EXPECT_EQ(
+      2,
+      primitive::run(
+        primitive::bind<
+          primitive::Item{.count = 1},
+          [](auto n) { return primitive::Item{.count = n + 1}; }>,
+        string_view("ab")));
+
+    EXPECT_EQ(
+      0,
+      primitive::run(
+        primitive::bind<
+          primitive::Item{.count = 1},
+          [](auto n) { return primitive::Item{.count = n + 1}; }>,
+        string_view("a")));
+  }
+
+  TEST(lexer, bind_value) { EXPECT_TRUE(false); }
 
 } // namespace ruse::experimental::lexer::testing

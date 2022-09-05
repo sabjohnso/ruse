@@ -14,12 +14,11 @@ namespace ruse::experimental::lexer {
   concept Positive = (X > 0);
 
   namespace primitive {
-    template<integer Count>
-    struct Item
-    {};
 
-    template<integer Count>
-    constexpr Item<Count> item{};
+    struct Item
+    {
+      integer count;
+    };
 
     template<auto... elements>
     struct Alt
@@ -48,60 +47,84 @@ namespace ruse::experimental::lexer {
     template<auto... elements>
     constexpr Seq<elements...> seq{};
 
-    template<auto Guard, auto Lexeme>
+    template<auto Guard, auto Lex>
     struct Guarded
     {
       static constexpr auto guard = Guard;
-      static constexpr auto lexeme = Lexeme;
+      static constexpr auto lexeme = Lex;
     };
 
-    template<auto Guard, auto Lexeme>
-    constexpr Guarded<Guard, Lexeme> guarded{};
+    template<auto Guard, auto Lex>
+    constexpr Guarded<Guard, Lex> guarded{};
+
+    template<auto Lex, auto Proc>
+    struct Bind
+    {};
+
+    template<auto Lex, auto Proc>
+    constexpr Bind<Lex, Proc> bind{};
+
+    template<auto Lex, auto Proc>
+    struct BindValue
+    {};
+
+    template<auto Lex, auto Proc>
+    constexpr BindValue<Lex, Proc> bind_value{};
 
     constexpr auto run = curry(nat<2>, [](auto lexeme, auto xs) {
       constexpr auto recur = case_lambda(
 
         // Guarded
-        []<auto Guard, auto Lexeme, String Sequence>(
-          auto recur, Guarded<Guard, Lexeme>, Sequence xs) {
-          return Guard(car(xs)) ? recur(recur, Lexeme, xs) : nat<0>;
+        []<auto Guard, auto Lex>(auto recur, Guarded<Guard, Lex>, auto xs) {
+          return Guard(xs[0]) ? recur(recur, Lex, xs) : nat<0>;
         },
 
         // Item
-        []<integer N, String Sequence>(auto, Item<N>, Sequence) {
-          if constexpr (length_type(type<Sequence>) >= N) {
-            return nat<N>;
-          } else {
-            return nat<0>;
-          }
+        [](auto /*recur*/, Item item, auto xs) {
+          return ssize(xs) >= item.count ? item.count : 0;
         },
 
         // Cut
-        // []<auto Lexeme, auto... Lexemes, String Sequence>(
-        //   auto recur, Cut<Lexeme, Lexemes...>, Sequence sequence) {
-        //   constexpr auto N = decltype(recur(recur, Lexeme, sequence);
-        //   const auto n = recur(recur, Lexeme, sequence);
-        //   if constexpr (same_as<remove_cvref_t<decltype(n)>, Nat<0>>) {
-        //   return recur(recur, cut<Lexemes...>, sequence);
-        //   } else {
-        //   return n;
-        //   }
-        // },
+        []<auto Lex, auto... Lexs>(auto recur, Cut<Lex, Lexs...>, auto xs) {
+          const auto m = recur(recur, Lex, xs);
+          return m ? m : recur(recur, cut<Lexs...>, xs);
+        },
 
-        // // Seq
-        // []<auto Lexeme, auto... Lexemes, String Sequence>(
-        //   auto recur, Seq<Lexeme, Lexemes...>, Sequence sequence) {
-        //   const auto m = recur(recur, Lexeme, sequence);
-        //   if constexpr (sizeof...(Lexemes) == 0) {
-        //     return m
-        //   } else {
-        //     const auto n = recur(recur, seq<Lexemes...>, drop(m, sequence));
-        //     if constexpr
-        //   }
-        // },
+        // Seq
+        []<auto Lex>(auto recur, Seq<Lex>, auto xs) {
+          return recur(recur, Lex, xs);
+        },
+        []<auto Lex, auto... Lexs>(auto recur, Seq<Lex, Lexs...>, auto xs) {
+          const auto m = recur(recur, Lex, xs);
+          const auto n =
+            m ? recur(recur, seq<Lexs...>, xs.substr(1, string_view::npos)) : 0;
+          return m && n ? m + n : 0;
+        },
+
+        // Alt
+        []<auto Lex>(auto recur, Alt<Lex>, auto xs) {
+          return recur(recur, Lex, xs);
+        },
+        []<auto Lex, auto... Lexs>(auto recur, Alt<Lex, Lexs...>, auto xs) {
+          const auto m = recur(recur, Lex, xs);
+          const auto n = recur(recur, alt<Lexs...>, xs);
+          return m > n ? m : n;
+        },
+
+        // Bind
+        []<auto Lex, auto Proc>(auto recur, Bind<Lex, Proc>, auto xs) {
+          const auto n = recur(recur, Lex, xs);
+          return n ? recur(recur, Proc(n), xs) : n;
+        },
+
+        // BindValue
+        []<auto Lex, auto Proc>(auto recur, BindValue<Lex, Proc>, auto xs) {
+          const auto n = recur(recur, Lex, xs);
+          return n ? recur(recur, Proc(xs.substr(0, n)), xs) : n;
+        },
 
         // Fail
-        [](auto...) -> Natural auto { return nat<0>; });
+        [](auto...) { return 0; });
       return recur(recur, lexeme, xs);
     });
 

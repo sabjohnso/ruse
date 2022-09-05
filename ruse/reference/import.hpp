@@ -3,6 +3,8 @@
 //
 // ... Standard header files
 //
+#include <algorithm>
+#include <cmath>
 #include <concepts>
 #include <cstdint>
 #include <functional>
@@ -43,4 +45,6 @@ namespace ruse::reference {
   using std::greater;
   using std::invoke;
 
+  // from ???
+  using std::max;
 } // end of namespace ruse::reference

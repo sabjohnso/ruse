@@ -11,7 +11,7 @@
 #include <ruse/reference/monoid.hpp>
 #include <ruse/reference/nothing.hpp>
 #include <ruse/reference/pair.hpp>
-#include <ruse/reference/parser.hpp>
+// #include <ruse/reference/parser.hpp>
 #include <ruse/reference/property_vector.hpp>
 #include <ruse/reference/protocol.hpp>
 #include <ruse/reference/pure.hpp>
@@ -140,6 +140,7 @@ namespace ruse {
   using reference::hoisted_drop;
   using reference::hoisted_head;
   using reference::hoisted_last;
+  using reference::hoisted_length;
   using reference::hoisted_list;
   using reference::HoistedList;
   using reference::HoistedString;
@@ -189,21 +190,21 @@ namespace ruse {
   using reference::letm;
   using reference::zapply;
 
-  using reference::alt;
-  using reference::conj;
-  using reference::disj;
-  using reference::empty;
-  using reference::equal;
-  using reference::fail;
-  using reference::item;
-  using reference::many;
-  using reference::opt;
-  using reference::parse_result_sequence;
-  using reference::parse_result_value;
-  using reference::result;
-  using reference::sat;
-  using reference::seq;
-  using reference::word;
+  // using reference::alt;
+  // using reference::conj;
+  // using reference::disj;
+  // using reference::empty;
+  // using reference::equal;
+  // using reference::fail;
+  // using reference::item;
+  // using reference::many;
+  // using reference::opt;
+  // using reference::parse_result_sequence;
+  // using reference::parse_result_value;
+  // using reference::result;
+  // using reference::sat;
+  // using reference::seq;
+  // using reference::word;
   // using reference::many1;
 
   // reader
