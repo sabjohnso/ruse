@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-readonly format_command=clang-format-13 --style=file --fallback-style=none
+readonly format_command=clang-format-14 
 
 readonly scriptpath=$0;
 readonly scriptdir=$(dirname $0)

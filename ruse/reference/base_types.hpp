@@ -4,6 +4,6 @@
 
 namespace ruse::reference {
 
-  using integer = ptrdiff_t;
+   using integer = ptrdiff_t;
 
 } // end of namespace ruse::reference

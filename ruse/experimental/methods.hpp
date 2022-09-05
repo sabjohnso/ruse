@@ -7,66 +7,58 @@
 
 namespace ruse::experimental {
 
-  using namespace ruse::reference;
+   using namespace ruse::reference;
 
-  namespace details {
+   namespace details {
 
-    template<typename T>
-    constexpr void
-    methods(Type<T>)
-    {}
+      template<typename T>
+      constexpr void
+      methods(Type<T>) {}
 
-    struct get_methods_fn
-    {
+      struct get_methods_fn {
+         template<typename T>
+         constexpr auto
+         operator()(Type<T>) const {
+            return methods(type<T>);
+         }
+      };
+   } // namespace details
+
+   constexpr auto& get_methods =
+     ruse::details::static_const<details::get_methods_fn>;
+
+   template<typename T>
+   constexpr auto methods = nothing;
+
+   template<typename Name>
+   struct method_name {
+      constexpr auto
+      operator=(auto fun) const {
+         return tag<Name>{}(fun);
+      }
+   };
+
+   template<fixed_string Name>
+   constexpr method_name<decltype(operator""_hoist<Name>())> method{};
+
+   template<fixed_string MethodName>
+   struct send_invocation {
       template<typename T>
       constexpr auto
-      operator()(Type<T>) const
-      {
-        return methods(type<T>);
+      operator()(T object, auto... args) const {
+         return plist_ref_(
+           tag<decltype(operator""_hoist<MethodName>())>{},
+           get_methods(type<T>))(object, args...);
       }
-    };
-  } // namespace details
+   };
 
-  constexpr auto& get_methods =
-    ruse::details::static_const<details::get_methods_fn>;
+   template<fixed_string MethodName>
+   constexpr send_invocation<MethodName> send{};
 
-  template<typename T>
-  constexpr auto methods = nothing;
+   template<fixed_string Fn, fixed_string... formals>
+   struct signature {};
 
-  template<typename Name>
-  struct method_name
-  {
-    constexpr auto
-    operator=(auto fun) const
-    {
-      return tag<Name>{}(fun);
-    }
-  };
-
-  template<fixed_string Name>
-  constexpr method_name<decltype(operator""_hoist<Name>())> method{};
-
-  template<fixed_string MethodName>
-  struct send_invocation
-  {
-    template<typename T>
-    constexpr auto
-    operator()(T object, auto... args) const
-    {
-      return plist_ref_(
-        tag<decltype(operator""_hoist<MethodName>())>{},
-        get_methods(type<T>))(object, args...);
-    }
-  };
-
-  template<fixed_string MethodName>
-  constexpr send_invocation<MethodName> send{};
-
-  template<fixed_string Fn, fixed_string... formals>
-  struct signature
-  {};
-
-  template<fixed_string Fn, fixed_string... Formals>
-  constexpr signature<Fn, Formals...> sig{};
+   template<fixed_string Fn, fixed_string... Formals>
+   constexpr signature<Fn, Formals...> sig{};
 
 } // end of namespace ruse::experimental

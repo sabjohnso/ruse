@@ -9,158 +9,154 @@
 
 namespace ruse::reference {
 
-  template<typename T, typename U>
-  concept Distinct = not same_as<T, U>;
+   template<typename T, typename U>
+   concept Distinct = not same_as<T, U>;
 
-  template<typename T, Distinct<T> U>
-  constexpr bool
-  operator==(T, U)
-  {
-    return false;
-  }
+   template<typename T, Distinct<T> U>
+   constexpr bool
+   operator==(T, U) {
+      return false;
+   }
 
-  /**
-   */
-  template<typename T, typename U>
-  concept EqualityComparable = requires(T x, U y)
-  {
-    {
-      x == y
-      } -> convertible_to<bool>;
-    {
-      x != y
-      } -> convertible_to<bool>;
-  };
+   /**
+    */
+   template<typename T, typename U>
+   concept EqualityComparable = requires(T x, U y) {
+      { x == y } -> convertible_to<bool>;
+      { x != y } -> convertible_to<bool>;
+   };
 
-  template<typename T, typename U>
-  concept NotEqualityComparable = not EqualityComparable<T, U>;
+   template<typename T, typename U>
+   concept NotEqualityComparable = not EqualityComparable<T, U>;
 
-  /**
-   * @brief U combinator introducing recursion.
-   */
-  constexpr auto u = [](auto f, auto... xs) { return f(f, xs...); };
+   /**
+    * @brief U combinator introducing recursion.
+    */
+   constexpr auto u = [](auto f, auto... xs) { return f(f, xs...); };
 
-  /**
-   * @brief A concept for default constructible types
-   */
-  template<typename T>
-  concept DefaultConstructible = requires
-  {
-    T{};
-  };
+   /**
+    * @brief A concept for default constructible types
+    */
+   template<typename T>
+   concept DefaultConstructible = requires {
+      T{};
+   };
 
-  /**
-   * @brief A concept for empty types
-   */
-  template<typename T>
-  concept Empty = is_empty_v<T>;
+   /**
+    * @brief A concept for empty types
+    */
+   template<typename T>
+   concept Empty = is_empty_v<T>;
 
-  /**
-   * @brief A concept for vacuous types
-   */
-  template<typename T>
-  concept Vacuous = Empty<T> && DefaultConstructible<T>;
+   /**
+    * @brief A concept for vacuous types
+    */
+   template<typename T>
+   concept Vacuous = Empty<T> && DefaultConstructible<T>;
 
-  constexpr auto is_vacuous_type = []<typename T>(Type<T>) {
-    return Vacuous<T>;
-  };
+   constexpr auto is_vacuous_type = []<typename T>(Type<T>) {
+      return Vacuous<T>;
+   };
 
-  /**
-   * @brief A concept for a selector
-   */
-  template<typename T, auto M>
-  concept Select = true;
+   /**
+    * @brief A concept for a selector
+    */
+   template<typename T, auto M>
+   concept Select = true;
 
-  /**
-   * @brief Curried function application
-   */
-  constexpr auto curry = []<integer N>(Nat<N>, auto f, auto... xs) {
-    constexpr auto aux = [](auto recur, auto f, auto... xs) {
-      return [=](auto... ys) {
-        constexpr integer M = sizeof...(xs) + sizeof...(ys);
+   /**
+    * @brief Curried function application
+    */
+   constexpr auto curry = []<integer N>(Nat<N>, auto f, auto... xs) {
+      constexpr auto aux = [](auto recur, auto f, auto... xs) {
+         return [ = ](auto... ys) {
+            constexpr integer M = sizeof...(xs) + sizeof...(ys);
 
-        if constexpr (M == N) {
-          return f(xs..., ys...);
+            if constexpr(M == N) {
+               return f(xs..., ys...);
 
-        } else if constexpr (M > N) {
+            } else if constexpr(M > N) {
 
-          // gcc fails with the compact expression
+               // gcc fails with the compact expression
 #ifdef __clang__
-          return [=]<std::size_t... Indices>(index_sequence<Indices...>)
-          {
-            return [=](Select<Indices> auto... xs, auto... ys) {
-              return f(xs...)(ys...);
-            };
-          }
-          (make_index_sequence<N>())(xs..., ys...);
+               return [=
+               ]<std::size_t... Indices>(index_sequence<Indices...>) {
+                  return [ = ](Select<Indices> auto... xs, auto... ys) {
+                     return f(xs...)(ys...);
+                  };
+               }
+               (make_index_sequence<N>())(xs..., ys...);
 #else
-          constexpr auto apply_taking =
-            []<std::size_t... Indices>(index_sequence<Indices...>)
-          {
-            return [](auto g, auto zs) { return g(std::get<Indices>(zs)...); };
-          }
-          (make_index_sequence<N>());
+               constexpr auto apply_taking = []<std::size_t... Indices>(
+                 index_sequence<Indices...>) {
+                  return [](auto g, auto zs) {
+                     return g(std::get<Indices>(zs)...);
+                  };
+               }
+               (make_index_sequence<N>());
 
-          constexpr auto apply_dropping =
-            []<std::size_t... Indices>(index_sequence<Indices...>)
-          {
-            return
-              [](auto g, auto zs) { return g(std::get<Indices + N>(zs)...); };
-          }
-          (make_index_sequence<M - N>());
-          return [=](auto zs) {
-            return apply_dropping(apply_taking(f, zs), zs);
-          }(std::tuple{xs..., ys...});
+               constexpr auto apply_dropping = [
+               ]<std::size_t... Indices>(index_sequence<Indices...>) {
+                  return [](auto g, auto zs) {
+                     return g(std::get<Indices + N>(zs)...);
+                  };
+               }
+               (make_index_sequence<M - N>());
+               return [ = ](auto zs) {
+                  return apply_dropping(apply_taking(f, zs), zs);
+               }(std::tuple{xs..., ys...});
 #endif
-        } else {
-          return recur(recur, f, xs..., ys...);
-        }
+            } else {
+               return recur(recur, f, xs..., ys...);
+            }
+         };
       };
-    };
-    return u(aux, f, xs...);
-  };
+      return u(aux, f, xs...);
+   };
 
-  /**
-   * @brief Lazy function application
-   */
-  constexpr auto Zzz = [](auto f, auto... xs) {
-    return curry(nat<sizeof...(xs)>, f, xs...);
-  };
+   /**
+    * @brief Lazy function application
+    */
+   constexpr auto Zzz = [](auto f, auto... xs) {
+      return curry(nat<sizeof...(xs)>, f, xs...);
+   };
 
-  /**
-   * @brief Return the input value;
-   */
-  constexpr auto identity = curry(nat<1>, [](auto x) { return x; });
+   /**
+    * @brief Return the input value;
+    */
+   constexpr auto identity = curry(nat<1>, [](auto x) { return x; });
 
-  /**
-   * @brief Return the right-to-left composition of the two input functions
-   */
-  constexpr auto compose = curry(nat<2>, [](auto f, auto g) {
-    return [=](auto... xs) { return f(g(xs...)); };
-  });
+   /**
+    * @brief Return the right-to-left composition of the two input
+    * functions
+    */
+   constexpr auto compose = curry(nat<2>, [](auto f, auto g) {
+      return [ = ](auto... xs) { return f(g(xs...)); };
+   });
 
-  /**
-   * @brief Return the result of applying the input function to the input
-   * result.
-   */
-  constexpr auto let = [](auto x, auto f) { return f(x); };
+   /**
+    * @brief Return the result of applying the input function to the
+    * input result.
+    */
+   constexpr auto let = [](auto x, auto f) { return f(x); };
 
-  /**
-   * @brief Return the first of two inputs.
-   */
-  constexpr auto constantly = curry(nat<2>, [](auto x, auto) { return x; });
+   /**
+    * @brief Return the first of two inputs.
+    */
+   constexpr auto constantly =
+     curry(nat<2>, [](auto x, auto) { return x; });
 
-  /**
-   * @brief Return the first of three inputs.
-   */
-  constexpr auto ternary_constantly =
-    curry(nat<3>, [](auto x, auto, auto) { return x; });
+   /**
+    * @brief Return the first of three inputs.
+    */
+   constexpr auto ternary_constantly =
+     curry(nat<3>, [](auto x, auto, auto) { return x; });
 
-  template<typename F, typename... Ts>
-  concept Invocable = is_invocable_v<F, Ts...>;
+   template<typename F, typename... Ts>
+   concept Invocable = is_invocable_v<F, Ts...>;
 
-  constexpr auto twc = [](auto x) { return x + x; };
+   constexpr auto twc = [](auto x) { return x + x; };
 
-  constexpr auto sqr = [](auto x) { return x * x; };
+   constexpr auto sqr = [](auto x) { return x * x; };
 
 } // end of namespace ruse::reference
