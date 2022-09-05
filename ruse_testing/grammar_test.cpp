@@ -10,148 +10,139 @@
 #include <ruse/experimental/grammar.hpp>
 
 namespace ruse::experimental::testing {
-  TEST(comment, construction)
-  {
-    STATIC_EXPECT_EQ(
-      R"(
+   TEST(comment, construction) {
+      STATIC_EXPECT_EQ(
+        R"(
 Definitions include variable and syntax definitions, begin forms containing zero or
 more definitions, let-syntax and letrec-syntax forms expanding into zero or more
 definitions, and derived definitions. Derived definitions are syntactic extensions
 that expand into some form of definition. A transformer expression is a syntax-rules
 form or some other expression that produces a transformer.
 )"_comment,
-      comment<R"(
+        comment<R"(
 Definitions include variable and syntax definitions, begin forms containing zero or
 more definitions, let-syntax and letrec-syntax forms expanding into zero or more
 definitions, and derived definitions. Derived definitions are syntactic extensions
 that expand into some form of definition. A transformer expression is a syntax-rules
 form or some other expression that produces a transformer.
 )">);
-  }
+   }
 
-  TEST(nonterminal, construction)
-  {
-    STATIC_EXPECT_EQ("program"_n, n<"program">);
-  }
+   TEST(nonterminal, construction) {
+      STATIC_EXPECT_EQ("program"_n, n<"program">);
+   }
 
-  TEST(semiterminal, construction) { STATIC_EXPECT_EQ("[A-Z]"_s, s<"[A-Z]">); }
+   TEST(semiterminal, construction) {
+      STATIC_EXPECT_EQ("[A-Z]"_s, s<"[A-Z]">);
+   }
 
-  TEST(terminal, construction) { STATIC_EXPECT_EQ("begin"_t, t<"begin">); }
+   TEST(terminal, construction) {
+      STATIC_EXPECT_EQ("begin"_t, t<"begin">);
+   }
 
-  TEST(zero_or_more, terminal)
-  {
-    EXPECT_EQ(zero_or_more<terminal<"begin">>{}, *t<"begin">);
-  }
+   TEST(zero_or_more, terminal) {
+      EXPECT_EQ(zero_or_more<terminal<"begin">>{}, *t<"begin">);
+   }
 
-  TEST(zero_or_more, semiterminal)
-  {
-    EXPECT_EQ(zero_or_more<semiterminal<"[A-Z]">>{}, *s<"[A-Z]">);
-  }
+   TEST(zero_or_more, semiterminal) {
+      EXPECT_EQ(zero_or_more<semiterminal<"[A-Z]">>{}, *s<"[A-Z]">);
+   }
 
-  TEST(zero_or_more, nonterminal)
-  {
-    STATIC_EXPECT_EQ(zero_or_more<nonterminal<"form">>{}, *n<"form">);
-  }
+   TEST(zero_or_more, nonterminal) {
+      STATIC_EXPECT_EQ(zero_or_more<nonterminal<"form">>{}, *n<"form">);
+   }
 
-  TEST(one_or_more, terminal)
-  {
-    EXPECT_EQ(one_or_more<terminal<"begin">>{}, +t<"begin">);
-  }
+   TEST(one_or_more, terminal) {
+      EXPECT_EQ(one_or_more<terminal<"begin">>{}, +t<"begin">);
+   }
 
-  TEST(one_or_more, semiterminal)
-  {
-    EXPECT_EQ(one_or_more<semiterminal<"[A-Z]">>{}, +s<"[A-Z]">);
-  }
+   TEST(one_or_more, semiterminal) {
+      EXPECT_EQ(one_or_more<semiterminal<"[A-Z]">>{}, +s<"[A-Z]">);
+   }
 
-  TEST(one_or_more, nonterminal)
-  {
-    STATIC_EXPECT_EQ(one_or_more<nonterminal<"form">>{}, +n<"form">);
-  }
+   TEST(one_or_more, nonterminal) {
+      STATIC_EXPECT_EQ(one_or_more<nonterminal<"form">>{}, +n<"form">);
+   }
 
-  TEST(zero_or_one, terminal)
-  {
-    EXPECT_EQ(zero_or_one<terminal<"begin">>{}, ~t<"begin">);
-  }
+   TEST(zero_or_one, terminal) {
+      EXPECT_EQ(zero_or_one<terminal<"begin">>{}, ~t<"begin">);
+   }
 
-  TEST(zero_or_one, semiterminal)
-  {
-    EXPECT_EQ(zero_or_one<semiterminal<"[A-Z]">>{}, ~s<"[A-Z]">);
-  }
+   TEST(zero_or_one, semiterminal) {
+      EXPECT_EQ(zero_or_one<semiterminal<"[A-Z]">>{}, ~s<"[A-Z]">);
+   }
 
-  TEST(zero_or_one, nonterminal)
-  {
-    STATIC_EXPECT_EQ(zero_or_one<nonterminal<"form">>{}, ~n<"form">);
-  }
+   TEST(zero_or_one, nonterminal) {
+      STATIC_EXPECT_EQ(zero_or_one<nonterminal<"form">>{}, ~n<"form">);
+   }
 
-  TEST(sequence, terminal_terminal)
-  {
-    STATIC_EXPECT_EQ(
-      (sequence<terminal<"(">, terminal<"begin">>{}), (t<"(">, t<"begin">));
-  }
+   TEST(sequence, terminal_terminal) {
+      STATIC_EXPECT_EQ(
+        (sequence<terminal<"(">, terminal<"begin">>{}),
+        (t<"(">, t<"begin">));
+   }
 
-  TEST(sequence, multiple_tokens)
-  {
-    constexpr auto parens = []<typename... Forms>(Forms...)
-    {
-      return (t<"(">, sequence<Forms...>{}, t<")">);
-    };
-    STATIC_EXPECT_EQ(
-      (sequence<
-        terminal<"(">,
-        nonterminal<"define-syntax">,
-        nonterminal<"keyword">,
-        nonterminal<"transformer expression">,
-        terminal<")">>{}),
-      parens(n<"define-syntax">, n<"keyword">, n<"transformer expression">));
-  }
-
-  TEST(production_rule, construction)
-  {
-    STATIC_EXPECT_EQ(
-      (production_rule<
-        nonterminal<"expression">,
-        nonterminal<"constant">,
-        nonterminal<"variable">,
-        sequence<
+   TEST(sequence, multiple_tokens) {
+      constexpr auto parens = []<typename... Forms>(Forms...) {
+         return (t<"(">, sequence<Forms...>{}, t<")">);
+      };
+      STATIC_EXPECT_EQ(
+        (sequence<
           terminal<"(">,
-          terminal<"quote">,
-          nonterminal<"datum">,
-          terminal<")">>>{}),
-      n<"expression"> <=> n<"constant"> | n<"variable"> |
-        (t<"(">, t<"quote">, n<"datum">, t<")">));
-  }
+          nonterminal<"define-syntax">,
+          nonterminal<"keyword">,
+          nonterminal<"transformer expression">,
+          terminal<")">>{}),
+        parens(
+          n<"define-syntax">,
+          n<"keyword">,
+          n<"transformer expression">));
+   }
 
-  TEST(grammar, construction)
-  {
+   TEST(production_rule, construction) {
+      STATIC_EXPECT_EQ(
+        (production_rule<
+          nonterminal<"expression">,
+          nonterminal<"constant">,
+          nonterminal<"variable">,
+          sequence<
+            terminal<"(">,
+            terminal<"quote">,
+            nonterminal<"datum">,
+            terminal<")">>>{}),
+        n<"expression"> <=> n<"constant"> | n<"variable"> |
+          (t<"(">, t<"quote">, n<"datum">, t<")">));
+   }
 
-    EXPECT_EQ(
-      (grammar<
-        production_rule<
-          nonterminal<"program">,
-          zero_or_more<nonterminal<"form">>>,
-        production_rule<
-          nonterminal<"form">,
-          nonterminal<"definition">,
-          nonterminal<"expression">>>{}),
-      (grammar{
-        n<"program"> <=> *n<"form">,
-        n<"form"> <=> n<"definition"> | n<"expression">}));
-  }
+   TEST(grammar, construction) {
 
-  TEST(grammar, scheme)
-  {
-    constexpr auto define = "define"_t;
-    constexpr auto definesyntax = "define-syntax"_t;
-    constexpr auto lambda = "lambda"_t;
-    constexpr auto begin = "begin"_t;
-    constexpr auto letsyntax = "let-syntax"_t;
-    constexpr auto letrecsyntax = "letrec-syntax"_t;
-    constexpr auto quote = "quote"_t;
-    constexpr auto plus = "+"_t;
-    constexpr auto minus = "-"_t;
+      EXPECT_EQ(
+        (grammar<
+          production_rule<
+            nonterminal<"program">,
+            zero_or_more<nonterminal<"form">>>,
+          production_rule<
+            nonterminal<"form">,
+            nonterminal<"definition">,
+            nonterminal<"expression">>>{}),
+        (grammar{
+          n<"program"> <=> *n<"form">,
+          n<"form"> <=> n<"definition"> | n<"expression">}));
+   }
 
-    constexpr auto dot = "."_t;
-    // clang-format off
+   TEST(grammar, scheme) {
+      constexpr auto define = "define"_t;
+      constexpr auto definesyntax = "define-syntax"_t;
+      constexpr auto lambda = "lambda"_t;
+      constexpr auto begin = "begin"_t;
+      constexpr auto letsyntax = "let-syntax"_t;
+      constexpr auto letrecsyntax = "letrec-syntax"_t;
+      constexpr auto quote = "quote"_t;
+      constexpr auto plus = "+"_t;
+      constexpr auto minus = "-"_t;
+
+      constexpr auto dot = "."_t;
+      // clang-format off
     constexpr auto scheme = grammar{
 
       rule<"program">(*"form"_n),

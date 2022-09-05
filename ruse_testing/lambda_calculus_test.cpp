@@ -10,5 +10,5 @@
 #include <ruse/experimental/lambda_calculus.hpp>
 
 namespace ruse::experimental::testing {
-  TEST(variable, concept_affirmative) {}
+   TEST(variable, concept_affirmative) {}
 } // end of namespace ruse::experimental::testing

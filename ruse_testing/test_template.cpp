@@ -16,9 +16,8 @@
 
 namespace ruse::testing {
 
-  TEST(template_proxy, concept_affirmative)
-  {
-    STATIC_EXPECT_TRUE(TemplateProxy<template_s<std::vector>>);
-  }
+   TEST(template_proxy, concept_affirmative) {
+      STATIC_EXPECT_TRUE(TemplateProxy<template_s<std::vector>>);
+   }
 
 } // end of namespace ruse::testing

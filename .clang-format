@@ -1,6 +1,5 @@
 ---
 Language:        Cpp
-# BasedOnStyle:  Mozilla
 AccessModifierOffset: 0
 AlignAfterOpenBracket: AlwaysBreak
 AlignArrayOfStructures: Left

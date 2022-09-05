@@ -16,14 +16,12 @@
 
 namespace ruse::testing {
 
-  TEST(template_proxy, concept_affirmative)
-  {
-    STATIC_EXPECT_TRUE(TemplateProxy<Template<std::vector>>);
-  }
+   TEST(template_proxy, concept_affirmative) {
+      STATIC_EXPECT_TRUE(TemplateProxy<Template<std::vector>>);
+   }
 
-  TEST(template_proxy, concept_negative)
-  {
-    STATIC_EXPECT_FALSE(TemplateProxy<Type<std::vector<int>>>);
-  }
+   TEST(template_proxy, concept_negative) {
+      STATIC_EXPECT_FALSE(TemplateProxy<Type<std::vector<int>>>);
+   }
 
 } // end of namespace ruse::testing
